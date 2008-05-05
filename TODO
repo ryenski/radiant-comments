@@ -1,0 +1,13 @@
+= TODO: 
+
+* Write Tests.
+* Email administrator when a comment is posted. 
+* Handle validation messages. 
+* Add user notification message when a comment is posted.
+
+
+= DONE
+* Add text filter to comment body.
+* Remove scaffolding and improve admin interface. 
+* Implement Akismet filter.
+* Validate inputs and -handle error messages-. 

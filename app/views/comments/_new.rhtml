@@ -1,0 +1,5 @@
+<h1>Comment Form</h1>
+
+<% form_for :comment, @comment, :url => {:controller => :comments, :action => :create} do |f| %>
+  <%= render :partial => "comments/form", :locals => {:f => f} %>
+<% end %>

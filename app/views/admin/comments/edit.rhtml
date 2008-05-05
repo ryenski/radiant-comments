@@ -1,0 +1,5 @@
+<h1>Edit comment by <%= @comment.author %></h1>
+
+<% form_for :comment, @comment, :url => admin_comment_path(@comment), :html => {:method => :put} do |f| %>
+  <%= render :partial => "form", :locals => {:f => f} %>
+<% end %>

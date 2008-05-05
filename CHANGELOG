@@ -1,0 +1,24 @@
+= 0.0.4
+* Added additional options and formatting to admin interface [rch]
+* Added comment approval options [rch]
+* Comments must now be approved before they will show up [rch]
+
+= 0.0.3
+* Changed dependency from admin_parts to shards. [hcf]
+* Added the snippets to a migration, so that the users no longer have to do this manually. [hcf]
+* Changed filter_id from integer to string to make it similar to radiant core. [hcf]
+* Removed the 'Comments' tab, and moved the functionality to the 'Pages' tab instead using shards. [hcf]
+* Added support for filters in comments, through the comment:filter_box_tag tag. [hcf]
+* Simplified the comment snippets. [hcf]
+
+= 0.0.2
+
+* Added Akismet support. 
+* Added admin tools for moderating comments. 
+* Added destroy dependency to Page#Comments association. 
+* Added no_login_required to CommentsController. Comment should no longer force login when posted. 
+
+= 0.0.1
+
+* Basic comment functionality in place
+

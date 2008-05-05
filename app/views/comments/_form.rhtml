@@ -1,0 +1,23 @@
+<h1>Comment Form</h1>
+
+<div id="comment_form_container">
+
+<fieldset class="comment_form">
+  
+  <a name="comment_form"></a>
+  
+  <%= f.text_field :author, :label => "Your Name (as you'd like it to appear on this comment)", :class => "regular" %>
+  
+  <%= f.text_field :author_url %>
+  
+  <%= f.text_field :author_email %>
+  
+  <%= f.text_area :content, :label => "Your comment", :rows => 5, :class => "regular" %>
+  
+  <%= submit_tag("Save comment", :class => "button", :id => "comment_submit_button") %> 
+  
+  <%= f.hidden_field :page_id %>
+  
+</fieldset>
+
+</div>

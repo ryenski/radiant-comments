@@ -1,0 +1,28 @@
+<tr class="<%= "approved" if comment.approved? %>">
+  <td>
+    <a name="comment_<%= comment.id %>"></a>
+    <cite>
+      <span class="grey">Posted</span> <%= comment.created_at.to_formatted_s(:long) %>
+      <span class="grey">by</span> <%= content_tag(:strong, link_to(comment.author, comment.author_url)) if comment.author_url %>
+      <%= " <span class=\"grey\">(#{link_to(comment.author_email, "mailto:#{comment.author_email}")})</span>" if comment.author_email %>
+      <span class="grey">on</span> <strong><%= link_to(h(comment.page.title), comment.page.url) %></strong>
+      
+      <%= content_tag(:span, "#{image_tag("/images/admin/accept.png")} approved", :class => "green") if comment.approved? %>
+      
+    </cite>
+    
+    <blockquote><%= comment.content %></blockquote>
+  </td>
+  <td class="controls right">
+    <div class="nowrap">
+      <%= link_to("approve", approve_admin_comment_path(comment)) unless comment.approved? %>
+      <%= link_to("unapprove", unapprove_admin_comment_path(comment)) if comment.approved? %>
+    </div>
+    <div>
+      <%= link_to "remove", admin_comment_path(:id => comment.id), :method => :delete, :confirm => "Are you sure?" %>
+    </div>
+    <div>
+      <%= link_to "edit", edit_admin_comment_path(:id => comment.id) %>
+    </div>
+  </td>
+</tr>

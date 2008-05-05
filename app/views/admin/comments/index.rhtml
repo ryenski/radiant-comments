@@ -1,0 +1,22 @@
+<h1><%= @page.nil? ? "#{params[:status].titleize if params[:status]} Comments" : "#{@page.comments_count} #{pluralize(@page.comments_count, "Comment")} on #{link_to(@page.title, page_edit_url(@page.id))}" %></h1>
+
+<p class="comment-nav">
+  View: 
+  <%= content_tag :span, link_to_unless_current("All Comments", :status => "all", :page_id => params[:page_id]) %> 
+  <%= content_tag :span, link_to_unless_current("Approved Comments", :status => "approved", :page_id => params[:page_id]) %> 
+  <%= content_tag :span, link_to_unless_current("Unapproved Comments", :status => "unapproved", :page_id => params[:page_id]) %>
+</p>
+
+<table id="comments" class="index" border="0" cellspacing="0" cellpadding="0">
+  <tbody>
+    <%= render :partial => "comment", :collection => (@comments) %>
+  </tbody>
+</table>
+
+<%= will_paginate @comments %>
+
+<script type="text/javascript">
+// <![CDATA[
+  new RuledTable('comments');
+// ]]>
+</script>
