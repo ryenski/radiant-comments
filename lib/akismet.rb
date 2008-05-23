@@ -17,13 +17,6 @@ class Akismet
     'Content-Type' => 'application/x-www-form-urlencoded'
   }
   
-  # Instance variables
-  @apiKey
-  @blog
-  @verifiedKey
-  @proxyPort = nil
-  @proxyHost = nil
-
   # Create a new instance of the Akismet class
   #
   # apiKey 
@@ -33,7 +26,6 @@ class Akismet
   def initialize(apiKey, blog)
     @apiKey = apiKey
     @blog = blog
-    @verifiedKey = false
   end
   
   # Set proxy information 
@@ -46,8 +38,12 @@ class Akismet
     @proxyPort = proxyPort
     @proxyHost = proxyHost
   end
+  
+  def valid?
+    (!@apiKey.blank? && !@blog.blank? && verifyAPIKey)
+  end
     
-  # Call to check and verify your API key. You may then call the #hasVerifiedKey method to see if your key has been validated.
+  # Call to check and verify your API key.
   def verifyAPIKey
     http = Net::HTTP.new('rest.akismet.com', 80, @proxyHost, @proxyPort)
     path = '/1.1/verify-key'
@@ -55,14 +51,9 @@ class Akismet
     data="key=#{@apiKey}&blog=#{@blog}"
     
     resp, data = http.post(path, data, STANDARD_HEADERS)
-    @verifiedKey = (data == "valid")
+    (data == "valid")
   end
  
-  # Returns <tt>true</tt> if the API key has been verified, <tt>false</tt> otherwise
-  def hasVerifiedKey()
-    return @verifiedKey
-  end
-  
   # Internal call to Akismet. Prepares the data for posting to the Akismet service.
   #
   # akismet_function

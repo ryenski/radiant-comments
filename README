@@ -1,9 +1,5 @@
 = Radiant Comments Extension
 
-== WARNING
-
-This extension is incompatible with the latest version of the Shards extension. Use at your own risk. If you get it working, PLEASE SUBMIT A PATCH! 
-
 Adds blog-like comment functionality to Radiant. 
 
 == Patches
@@ -12,8 +8,7 @@ This software "works for me", but it may not work for you, depending on your par
 
 == Dependencies
 
-* Requires Radiant 0.6.1 or greater. 
-* Requires the Shards extension (http://dev.radiantcms.org/svn/radiant/trunk/extensions/shards)
+* Requires Radiant 0.6.7 or greater. 
 * Requires will_paginate Rails plugin (svn://errtheblog.com/svn/plugins/will_paginate)
 
 == Usage
@@ -22,13 +17,7 @@ Remember to run the migration. This _WILL_ delete any snippets named 'comment', 
 
   rake radiant:extensions:comments:migrate
 
-The Shards extension must be loaded before Comments. To do this, add the following line to config/environment.rb: 
-
-  config.extensions = [ :shards, :all ] 
-
-To enable spam protection, you will need to add your Akismet key to app/models/comments.rb: 
-
-  @akismet = Akismet.new('enter-your-key-here', 'enter-your-domain-here') 
+To enable spam protection, you will need to set your Akismet key and url in the Radiant config.
   
 === In your layout: 
 
