@@ -62,8 +62,12 @@ module CommentTags
   tag "comment:form" do |tag|
     @tag_attr = { :class => "comment_form" }.update( tag.attr.symbolize_keys )
     results = %Q{
-      <form action="/pages/#{tag.locals.page.id}/comments" method="post" id="comment_form">
-      #{tag.expand}
+      <a name="comment"></a>
+      <a name="comment_saved"></a>
+      <form action="/pages/#{tag.locals.page.id}/comments#comment" method="post" id="comment_form">
+        <div id="comment_saved" style="display:none">Thanks for your comment!</div>
+        <script type="text/javascript">if($ && location.hash == '#comment_saved'){$('comment_saved').show();}</script>
+        #{tag.expand}
       </form>
     }
   end
