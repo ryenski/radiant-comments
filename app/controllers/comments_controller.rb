@@ -4,26 +4,29 @@ class CommentsController < ApplicationController
   skip_before_filter :verify_authenticity_token  
 
   def create
-    
-    @page = Page.find(params[:page_id])
-    @comment = @page.comments.build(params[:comment])
-    @comment.request = request
+    page = Page.find(params[:page_id])
+    comment = page.comments.build(params[:comment])
+    comment.request = request
     
     if Radiant::Config['comments.filters_enabled'] == "true"
       TextFilter.descendants.each do |filter| 
-        @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id    
+        comment.content_html = filter.filter(comment.content) if filter.filter_name == comment.filter_id    
       end
     else
-      @comment.content_html = help.simple_format(help.h(@comment.content))
+      comment.content_html = help.simple_format(help.h(comment.content))
     end
     
-    if !@comment.is_spam?
-      @comment.save
+    if !comment.is_spam?
+      comment.save!
       ResponseCache.instance.clear
       CommentMailer.deliver_comment_notification if Radiant::Config['comments.notification'] == "true"
     end
     
-    redirect_to "#{@page.url}#comment_#{@comment.id}" and return
+    redirect_to page.url
+  rescue ActiveRecord::RecordInvalid
+    page.request, page.response = request, response
+    page.last_comment = comment
+    render :text => page.render
   end
   
   private

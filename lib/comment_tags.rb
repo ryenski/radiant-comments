@@ -80,6 +80,23 @@ module CommentTags
     date = comment.created_at
     date.strftime(format)
   end
+  
+  tag 'comment:error' do |tag|
+    if comment = tag.locals.page.last_comment
+      if on = tag.attr['on']
+        if error = comment.errors.on(on)
+          tag.locals.error_message = error
+          tag.expand
+        end
+      else
+        tag.expand if !comment.valid?
+      end
+    end
+  end
+  
+  tag 'comment:error:message' do |tag|
+    tag.locals.error_message
+  end
 
   %w(text password hidden).each do |type|
     desc %{Builds a #{type} form field for comments.}
@@ -89,7 +106,9 @@ module CommentTags
       r << %{ id="comment_#{attrs[:name]}"}
       r << %{ name="comment[#{attrs[:name]}]"}
       r << %{ class="#{attrs[:class]}"} if attrs[:class]
-      r << %{ value="#{attrs[:value]}" } if attrs[:value]
+      if value = (tag.locals.page.last_comment ? tag.locals.page.last_comment.send(attrs[:name]) : attrs[:value])
+        r << %{ value="#{value}" }
+      end
       r << %{ />}
     end
   end
@@ -117,7 +136,9 @@ module CommentTags
     r << %{ rows="#{attrs[:rows]}"} if attrs[:rows]
     r << %{ cols="#{attrs[:cols]}"} if attrs[:cols]
     r << %{>}
-    r << attrs[:content] if attrs[:content]
+    if content = (tag.locals.page.last_comment ? tag.locals.page.last_comment.send(attrs[:name]) : attrs[:content])
+      r << content
+    end
     r << %{</textarea>}
   end
   

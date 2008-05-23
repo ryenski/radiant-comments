@@ -23,6 +23,7 @@ class CommentsExtension < Radiant::Extension
       has_many :comments, :dependent => :destroy
       has_many :approved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NOT NULL"
       has_many :unapproved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NULL"
+      attr_accessor :last_comment
     end
     
     if admin.respond_to? :page
