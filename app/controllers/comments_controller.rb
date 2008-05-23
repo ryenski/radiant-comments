@@ -20,9 +20,10 @@ class CommentsController < ApplicationController
       comment.save!
       ResponseCache.instance.clear
       CommentMailer.deliver_comment_notification if Radiant::Config['comments.notification'] == "true"
+      redirect_to "#{page.url}#comment_saved"
+    else
+      redirect_to "#{page.url}#comment_rejected"
     end
-    
-    redirect_to page.url
   rescue ActiveRecord::RecordInvalid
     page.request, page.response = request, response
     page.last_comment = comment

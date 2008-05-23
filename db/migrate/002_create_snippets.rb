@@ -39,6 +39,8 @@ CONTENT
   <r:if_enable_comments>
     <r:comment:form>
       <h3>Post a comment</h3>
+      <div id="comment_saved" style="display:none">Thanks for your comment!</div>
+      <script type="text/javascript">if($ && location.hash == '#comment_saved'){$('comment_saved').show(); location.hash = '_';}</script>
       <r:error><p style="color:red">Please correct the errors below.</p></r:error>
       <p><label for="comment[author]">Your Name</label><br />
       <r:error on="author"><p style="color:red">Name <r:message /></p></r:error>
