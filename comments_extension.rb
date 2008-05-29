@@ -37,6 +37,7 @@ class CommentsExtension < Radiant::Extension
     { 'notification' => 'false',
       'notification_from' => '',
       'notification_to' => '',
+      'notification_site_name' => '',
       'akismet_key' => '',
       'akismet_url' => '',
       'filters_enabled' => 'true',
