@@ -1,3 +1,11 @@
+= 0.0.5
+
+* Pluralized the `comments` tag so that it does not conflict with the standard Radiant `comment` tag. [nathaniel@terralien.com]
+* Added posting confirmation support. [nathaniel@terralien.com]
+* Added validation support. [nathaniel@terralien.com]
+* Allow disabling of input filters. [nathaniel@terralien.com]
+* Updated to work with Radiant 0.6.7. [nathaniel@terralien.com]
+
 = 0.0.4
 * Added additional options and formatting to admin interface [rch]
 * Added comment approval options [rch]

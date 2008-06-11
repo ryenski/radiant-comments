@@ -1,10 +1,9 @@
-#require 'page_extender'
 require_dependency 'application'
 
 class CommentsExtension < Radiant::Extension
-  version "0.0.3"
+  version "0.0.5"
   description "Adds blog-like comments and comment functionality to pages."
-  url "http://svn.artofmission.com/svn/plugins/radiant/extensions/comments/"
+  url "http://github.com/ntalbott/radiant-comments/tree/master"
   
   define_routes do |map|
     map.resources :comments, :path_prefix => "/pages/:page_id", :controller => "comments" # Regular routes for comments

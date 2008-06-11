@@ -35,10 +35,12 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 === Snippet: comments
 
 <r:if_comments>
- <h2>Comments</h2>
- <r:comments:each>
-   <r:snippet name="comment" />
- </r:comments:each>
+  <div class="comments">
+    <h2>Comments</h2>
+    <r:comments:each>
+      <r:snippet name="comment" />
+    </r:comments:each>
+  </div>
 </r:if_comments>
 <r:snippet name="comment_form" />
 	
@@ -46,42 +48,40 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 === Snippet: comment
 
 <div class="comment">
- <span class="number"><r:index />.</span>
- <span class="by_line">
-   <r:author_link /> wrote:
- </span>
- <div class="message">
-   <r:content />
- </div>
+  <p class="author"><r:comments:field:author /> said on <r:comments:date />:</p>
+  <div class="content_html"><r:comments:field:content_html /></div>
 </div>
 
 === Snippet: comment_form
 
-<r:if_comments_enabled>
- <r:comments:form>
-   <h2>Post a Comment</h2>
-   <p>
-     <label>Name</label>
-     <r:author_field class="textbox" />
-   </p>
-   <p>
-     <label>E-mail <small>(not shown)</small></label>
-     <r:author_email_field class="textbox" />
-   </p>
-   <p>
-     <label>Website</label>
-     <r:author_url_field class="textbox" />
-   </p>
-   <p>
-     <label>Text Filter</label>
-     <r:text_filter_field />
-   </p>
-   <p>
-     <label>Message</label>
-     <r:content_field rows="9" cols="40" />
-   </p>
-   <div class="buttons">
-     <input type="submit" value="Post Comment" />
-   </div>
- </r:comments:form>
-</r:if_comments_enabled>
+<r:page>
+  <r:if_enable_comments>
+    <r:comments:form>
+      <h3>Post a comment</h3>
+      <r:error><p style="color:red">Please correct the errors below.</p></r:error>
+      <p><label for="comment[author]">Your Name</label><br />
+      <r:error on="author"><p style="color:red">Name <r:message /></p></r:error>
+      <r:text_field_tag name="author" id="author" class="required" /></p>
+
+      <p><label for="comment[author_email]">Your Email Address</label> (required, but not displayed)<br />
+      <r:error on="author_email"><p style="color:red">Email <r:message /></p></r:error>
+      <r:text_field_tag name="author_email" class="required" /></p>
+
+      <p><label for="comment[author_url]">Your Web Address</label> (optional)<br />
+      <r:error on="author_url"><p style="color:red">Web Address <r:message /></p></r:error>
+      <r:text_field_tag name="author_url" /></p>
+
+      <p><label for="comment[content]">Your Comment</label><br />
+      <r:error on="content"><p style="color:red">Comment <r:message /></p></r:error>
+      <label for="comment[filter_id]">Filter: <r:filter_box_tag name="filter_id" value="Textile" /><br />
+      <r:text_area_tag name="content" class="required" rows="9" cols="40" /></p>
+
+      <r:submit_tag name="submit" value="Save Comment" />
+
+    </r:comments:form>
+  </r:if_enable_comments>
+</r:page>
+
+=== Contributors
+
+* Nathaniel Talbott of http://terralien.com/, sponsored by http://ignitesocialmedia.com/.

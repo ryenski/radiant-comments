@@ -1,7 +1,6 @@
 = TODO: 
 
 * Write Tests.
-* Handle validation messages. 
 * Add user notification message when a comment is posted.
 
 
@@ -9,3 +8,4 @@
 * Add text filter to comment body.
 * Remove scaffolding and improve admin interface. 
 * Implement Akismet filter.
+* Handle validation messages. 
