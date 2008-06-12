@@ -1,11 +1,9 @@
-      <td class="comment_link"><small>
-				
-				<% if page.enable_comments %>
-					<%= link_to "#{page.comments_count} comments", admin_page_comments_path(:page_id => page.id) %>
-				  
-				<% else %>
-					<%= link_to "Enable", admin_page_comments_path(:page_id => page.id, :action => :enable) %>
-				<% end %>
-				
-				
-		  </small></td>
+<td class="comment_link">
+  <small>
+    <% if page.enable_comments %>
+      <%= link_to "#{page.comments_count} comments", admin_page_comments_path(:page_id => page.id) %>
+    <% else %>
+      <%= link_to "Enable", admin_page_comments_path(:page_id => page.id, :action => :enable) %>
+    <% end %>
+  </small>
+</td>

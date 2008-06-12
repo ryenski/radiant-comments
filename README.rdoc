@@ -1,0 +1,37 @@
+= Radiant Comments Extension
+
+Adds blog-like comment functionality to Radiant. 
+
+== Patches
+
+This software "works for me", but it may not work for you, depending on your particular environment or setup. Feel free to modify it in any way. If you do make changes that would be useful to others, please send a patch to ryan at artofmission (dot you-know-what), and I will see that it gets applied. 
+
+== Dependencies
+
+* Requires Radiant 0.6.7 or greater.
+* Requires will_paginate Rails plugin (http://github.com/mislav/will_paginate/tree/master)
+
+== Usage
+
+Remember to run the migration. This _WILL_ delete any snippets named 'comment', 'comments' and 'comment_form' if these exist.
+
+  rake radiant:extensions:comments:migrate
+
+To enable spam protection, you will need to set your Akismet key and url in the Radiant config.
+  
+=== In your layout: 
+
+  <r:snippet name="comments" />
+
+=== Snippets
+
+The snippets "comments", "comment" and "comment_form" are created by the migration. These can be found under snippets, and can be customised after your needs. Check out the 002 migration to see what they default to.
+
+== Caveats
+
+* Relative urls will *not* work on comment pages if they fail validation, since the page gets re-rendered
+  at a (probably) different level of the hierarchy. Always use absolute urls and you won't have any issues.
+
+== Contributors
+
+* Nathaniel Talbott of http://terralien.com/, sponsored by http://ignitesocialmedia.com/.

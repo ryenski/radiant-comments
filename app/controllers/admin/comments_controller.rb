@@ -18,7 +18,6 @@ class Admin::CommentsController < ApplicationController
     @comment.destroy
     announce_comment_removed
     ResponseCache.instance.expire_response(@comment.page.url)
-    #redirect_to admin_page_comments_path(@comment.page)
     redirect_to :back
   end
   
@@ -29,12 +28,11 @@ class Admin::CommentsController < ApplicationController
   def update
     @comment = Comment.find(params[:id])
     begin
-      
       TextFilter.descendants.each do |filter| 
         @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id    
       end
       @comment.update_attributes(params[:comment])
-      ResponseCache.instance.clear #expire_response(page.url)
+      ResponseCache.instance.clear
       flash[:notice] = "Comment Saved"
       redirect_to :action => :index
     rescue Exception => e
@@ -45,7 +43,7 @@ class Admin::CommentsController < ApplicationController
   def enable
     @page = Page.find(params[:page_id])
     @page.enable_comments = 1
-    @page.update
+    @page.save!
     flash[:notice] = "Comments has been enabled for #{@page.title}"
     redirect_to page_index_path
   end

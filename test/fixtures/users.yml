@@ -1,0 +1,6 @@
+admin:
+  id: 3
+  name: Admin User
+  login: admin
+  password: <%= User.new.sha1 'password' %>
+  admin: true
