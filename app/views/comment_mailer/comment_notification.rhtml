@@ -1,3 +1,21 @@
-A new comment has been posted on the <%= @name %> site. Comments require your approval before they will become visible. 
+A new comment has been posted on the AS Website article <%= @comment.page.title %> (http://<%= CommentMailer.default_url_options[:host] %><%= @comment.page.url %>)
 
-  <%= @url %>
+  Author : <%= @comment.author %> (IP: <%= @comment.author_ip %>)
+  E-mail : <%= @comment.author_email %>
+  URL    : <%= @comment.author_url %>
+  Whois  : http://ws.arin.net/cgi-bin/whois.pl?queryinput=<%= @comment.author_ip %>
+  Comment: 
+
+
+  <%= @comment.content %>
+
+
+
+  You can see all comments on this post here: 
+      <%= admin_page_comments_url(@comment.page) %>;
+
+  Approve it: 
+      <%=  approve_admin_comment_url(@comment) %>
+
+  View all comments awaiting approval:
+      <%= admin_comments_url(:status => :unapproved) %>
