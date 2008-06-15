@@ -19,7 +19,7 @@ class CommentsController < ApplicationController
     if !comment.is_spam?
       comment.save!
       ResponseCache.instance.clear
-      CommentMailer.deliver_comment_notification(@comment) if Radiant::Config['comments.notification'] == "true"
+      CommentMailer.deliver_comment_notification(comment) if Radiant::Config['comments.notification'] == "true"
       redirect_to "#{page.url}#comment_saved"
     else
       redirect_to "#{page.url}#comment_rejected"

@@ -1,4 +1,4 @@
-A new comment has been posted on the AS Website article <%= @comment.page.title %> (http://<%= CommentMailer.default_url_options[:host] %><%= @comment.page.url %>)
+A new comment has been posted on the <%= @site_name %> article <%= @comment.page.title %> (<%= @page_url %>)
 
   Author : <%= @comment.author %> (IP: <%= @comment.author_ip %>)
   E-mail : <%= @comment.author_email %>
