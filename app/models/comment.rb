@@ -2,6 +2,8 @@ class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
   validates_presence_of :author, :author_email, :content
   
+  before_save :auto_approve
+  
   def self.per_page
     50
   end
@@ -12,24 +14,29 @@ class Comment < ActiveRecord::Base
     self.referrer = request.env['HTTP_REFERER']
   end
   
-  # Akismet Spam Filter
-  # Marks a content item as spam unless it checks out with Akismet
-  def is_spam?
-    akismet = Akismet.new(Radiant::Config['comments.akismet_key'], Radiant::Config['comments.akismet_url'])
+  def akismet
+    @akismet ||= Akismet.new(Radiant::Config['comments.akismet_key'], Radiant::Config['comments.akismet_url'])
+  end
+  
+  # If the Akismet details are valid, and Akismet thinks this is a non-spam
+  # comment, this method will return true
+  def auto_approve?
     if akismet.valid?
-      akismet.commentCheck(
-                self.author_ip,            # remote IP
-                self.user_agent,           # user agent
-                self.referrer,             # http referer
-                self.page.url,             # permalink
-                'comment',                 # comment type
-                self.author,               # author name
-                self.author_email,         # author email
-                self.author_url,           # author url
-                self.content,              # comment text
-                {})                        # other
+      # We do the negation because true means spam, false means ham
+      !akismet.commentCheck(
+        self.author_ip,            # remote IP
+        self.user_agent,           # user agent
+        self.referrer,             # http referer
+        self.page.url,             # permalink
+        'comment',                 # comment type
+        self.author,               # author name
+        self.author_email,         # author email
+        self.author_url,           # author url
+        self.content,              # comment text
+        {}                         # other
+      )
     else
-      nil
+      false
     end
   end
   
@@ -45,5 +52,11 @@ class Comment < ActiveRecord::Base
   def unapprove!
     self.update_attribute(:approved_at, nil)
   end
+  
+  private
+  
+    def auto_approve
+      self.approved_at = Time.now if auto_approve?
+    end
   
 end

@@ -16,14 +16,11 @@ class CommentsController < ApplicationController
       comment.content_html = help.simple_format(help.h(comment.content))
     end
     
-    if !comment.is_spam?
-      comment.save!
-      ResponseCache.instance.clear
-      CommentMailer.deliver_comment_notification(comment) if Radiant::Config['comments.notification'] == "true"
-      redirect_to "#{page.url}#comment_saved"
-    else
-      redirect_to "#{page.url}#comment_rejected"
-    end
+    comment.save!
+    ResponseCache.instance.clear
+    CommentMailer.deliver_comment_notification(comment) if Radiant::Config['comments.notification'] == "true"
+    
+    redirect_to "#{page.url}#comment_saved"
   rescue ActiveRecord::RecordInvalid
     page.request, page.response = request, response
     page.last_comment = comment
