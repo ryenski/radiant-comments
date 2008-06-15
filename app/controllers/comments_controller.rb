@@ -7,16 +7,8 @@ class CommentsController < ApplicationController
     page = Page.find(params[:page_id])
     comment = page.comments.build(params[:comment])
     comment.request = request
-    
-    if Radiant::Config['comments.filters_enabled'] == "true"
-      TextFilter.descendants.each do |filter| 
-        comment.content_html = filter.filter(comment.content) if filter.filter_name == comment.filter_id    
-      end
-    else
-      comment.content_html = help.simple_format(help.h(comment.content))
-    end
-    
     comment.save!
+    
     ResponseCache.instance.clear
     CommentMailer.deliver_comment_notification(comment) if Radiant::Config['comments.notification'] == "true"
     
@@ -26,20 +18,5 @@ class CommentsController < ApplicationController
     page.last_comment = comment
     render :text => page.render
   end
-  
-  private
-  
-    @@help = nil
-    def help
-      unless @@help
-        class << (@@help = Object.new)
-          include ERB::Util
-          include ActionView::Helpers::TextHelper
-          include ActionView::Helpers::TagHelper
-          public :h
-        end
-      end
-      @@help
-    end
   
 end

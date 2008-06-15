@@ -3,6 +3,7 @@ class Comment < ActiveRecord::Base
   validates_presence_of :author, :author_email, :content
   
   before_save :auto_approve
+  before_save :apply_filter
   
   def self.per_page
     50
@@ -58,5 +59,30 @@ class Comment < ActiveRecord::Base
     def auto_approve
       self.approved_at = Time.now if auto_approve?
     end
+    
+    def apply_filter
+      self.content_html = filter.filter(content)
+    end
+    
+    def filter
+      filtering_enabled? && filter_from_form || SimpleFilter.new
+    end
+    
+    def filter_from_form
+      TextFilter.descendants.find { |f| f.filter_name = filter_id }
+    end
+    
+    def filtering_enabled?
+      Radiant::Config['comments.filters_enabled'] == "true"
+    end
   
+  class SimpleFilter
+    include ERB::Util
+    include ActionView::Helpers::TextHelper
+    include ActionView::Helpers::TagHelper
+    
+    def filter(content)
+      simple_format(h(content))
+    end
+  end
 end
