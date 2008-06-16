@@ -55,6 +55,13 @@ module CommentTags
   end
   
   desc %{
+    Renders the contained elements if the comment has an author_url specified.
+  }
+  tag "comments:field:if_author_url" do |tag|
+    tag.expand unless tag.locals.comment.author_url.blank?
+  end
+  
+  desc %{
     Renders a comment form. 
     
     *Usage:*

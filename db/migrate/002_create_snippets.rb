@@ -24,10 +24,17 @@ CONTENT
     Snippet.new do |s|
       s.name = "comment"
       s.content = <<CONTENT
-<div class="comment">
-  <p class="author"><r:comments:field:author /> said on <r:comments:date />:</p>
-  <div class="content_html"><r:comments:field:content_html /></div>
-</div>
+<r:comments:field>
+  <div class="comment">
+    <p class="author">
+      <r:if_author_url><a href="<r:author_url/>" title="Visit <r:author/>'s website"></r:if_author_url>
+      <r:author/>
+      <r:if_author_url></a></r:if_author_url>
+      said on <r:comments:date />:
+    </p>
+    <div class="content_html"><r:content_html /></div>
+  </div>
+</r:comments:field>
 CONTENT
     end.save
 
