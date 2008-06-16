@@ -35,3 +35,10 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 == Contributors
 
 * Nathaniel Talbott of http://terralien.com/, sponsored by http://ignitesocialmedia.com/.
+* John Croisant
+* Jon Leighton
+* Witter Cheng
+* Keith Bingman
+* Sean Cribbs
+
+If you contribute, go ahead and add your name to the list! 
