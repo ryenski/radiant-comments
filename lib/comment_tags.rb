@@ -55,6 +55,19 @@ module CommentTags
   end
   
   desc %{
+    Renders the date a comment was created. 
+    
+    *Usage:* 
+    <pre><code><r:date [format="%A, %B %d, %Y"] /></code></pre>
+  }
+  tag 'comments:field:date' do |tag|
+    comment = tag.locals.comment
+    format = (tag.attr['format'] || '%A, %B %d, %Y')
+    date = comment.created_at
+    date.strftime(format)
+  end
+  
+  desc %{
     Renders the contained elements if the comment has an author_url specified.
   }
   tag "comments:field:if_author_url" do |tag|
@@ -78,19 +91,6 @@ module CommentTags
         #{tag.expand}
       </form>
     }
-  end
-  
-  desc %{
-    Renders the date a comment was created. 
-    
-    *Usage:* 
-    <pre><code><r:date [format="%A, %B %d, %Y"] /></code></pre>
-  }
-  tag 'comments:date' do |tag|
-    comment = tag.locals.comment
-    format = (tag.attr['format'] || '%A, %B %d, %Y')
-    date = comment.created_at
-    date.strftime(format)
   end
   
   tag 'comments:error' do |tag|
