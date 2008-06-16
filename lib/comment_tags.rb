@@ -29,7 +29,9 @@ module CommentTags
     Cycles through each comment and renders the enclosed tags for each. 
   }
   tag "comments:each" do |tag|
-    comments = tag.locals.page.approved_comments
+    page = tag.locals.page
+    comments = page.approved_comments.to_a
+    comments << page.selected_comment if page.selected_comment && page.selected_comment.unapproved?
     result = []
     comments.each do |comment|
       tag.locals.comment = comment
@@ -75,6 +77,28 @@ module CommentTags
   end
   
   desc %{
+    Renders the contained elements if the comment is selected - that is, if it is a comment
+    the user has just posted
+  }
+  tag "comments:field:if_selected" do |tag|
+    tag.expand if tag.locals.comment == tag.locals.page.selected_comment
+  end
+  
+  desc %{
+    Renders the contained elements if the comment has been approved
+  }
+  tag "comments:field:if_approved" do |tag|
+    tag.expand if tag.locals.comment.approved?
+  end
+  
+  desc %{
+    Renders the contained elements if the comment has not been approved
+  }
+  tag "comments:field:unless_approved" do |tag|
+    tag.expand unless tag.locals.comment.approved?
+  end
+  
+  desc %{
     Renders a comment form. 
     
     *Usage:*
@@ -83,11 +107,7 @@ module CommentTags
   tag "comments:form" do |tag|
     @tag_attr = { :class => "comment_form" }.update( tag.attr.symbolize_keys )
     results = %Q{
-      <a name="comment"></a>
-      <a name="comment_saved"></a>
-      <form action="/pages/#{tag.locals.page.id}/comments#comment" method="post" id="comment_form">
-        <div id="comment_saved" style="display:none">Thanks for your comment!</div>
-        <script type="text/javascript">if($ && location.hash == '#comment_saved'){$('comment_saved').show();}</script>
+      <form action="#{tag.locals.page.url}comments" method="post" id="comment_form">
         #{tag.expand}
       </form>
     }

@@ -6,7 +6,7 @@ class CommentsExtension < Radiant::Extension
   url "http://github.com/ntalbott/radiant-comments/tree/master"
   
   define_routes do |map|
-    map.resources :comments, :path_prefix => "/pages/:page_id", :controller => "comments" # Regular routes for comments
+    map.resources :comments, :name_prefix => "page_", :path_prefix => "*url", :controller => "comments" # Regular routes for comments
     map.with_options(:controller => 'admin/comments') do |comments| 
       comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get} # Admin routes for comments
       comments.admin_page_comments 'admin/pages/:page_id/comments/:action'  # This route allows us to nicely pull up comments for a particular page
@@ -19,10 +19,11 @@ class CommentsExtension < Radiant::Extension
     Comment
     
     Page.class_eval do
-      has_many :comments, :dependent => :destroy
-      has_many :approved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NOT NULL"
-      has_many :unapproved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NULL"
+      has_many :comments, :dependent => :destroy, :order => "created_at ASC"
+      has_many :approved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NOT NULL", :order => "created_at ASC"
+      has_many :unapproved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NULL", :order => "created_at ASC"
       attr_accessor :last_comment
+      attr_accessor :selected_comment
     end
     
     if admin.respond_to? :page
