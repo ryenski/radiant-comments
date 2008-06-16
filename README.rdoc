@@ -40,5 +40,6 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 * Witter Cheng
 * Keith Bingman
 * Sean Cribbs
+* Ryan Heneise
 
 If you contribute, go ahead and add your name to the list! 
