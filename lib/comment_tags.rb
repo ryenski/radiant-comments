@@ -14,7 +14,14 @@ module CommentTags
     Renders the contained elements if the page has comments. 
   }
   tag "if_comments" do |tag|
-    tag.expand if tag.locals.page.approved_comments.count > 0
+    tag.expand unless tag.locals.page.approved_comments.empty?
+  end
+  
+  desc %{
+    Renders the contained elements if the page has comments _or_ comment is enabled on it.
+  }
+  tag "if_comments_or_enable_comments" do |tag|
+    tag.expand if(!tag.locals.page.approved_comments.empty? || tag.locals.page.enable_comments?)
   end
   
   desc %{ 
@@ -70,12 +77,23 @@ module CommentTags
   end
   
   desc %{
+    Renders a link if there's an author_url, otherwise just the author's name.
+  }
+  tag "comments:field:author_link" do |tag|
+    if tag.locals.comment.author_url.blank?
+      tag.locals.comment.author
+    else
+      %(<a href="#{tag.locals.comment.author_url}">#{tag.locals.comment.author}</a>)
+    end
+  end
+  
+  desc %{
     Renders the contained elements if the comment has an author_url specified.
   }
   tag "comments:field:if_author_url" do |tag|
     tag.expand unless tag.locals.comment.author_url.blank?
   end
-  
+
   desc %{
     Renders the contained elements if the comment is selected - that is, if it is a comment
     the user has just posted
