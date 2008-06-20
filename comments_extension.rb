@@ -6,12 +6,13 @@ class CommentsExtension < Radiant::Extension
   url "http://github.com/ntalbott/radiant-comments/tree/master"
   
   define_routes do |map|
-    map.resources :comments, :name_prefix => "page_", :path_prefix => "*url", :controller => "comments" # Regular routes for comments
     map.with_options(:controller => 'admin/comments') do |comments| 
-      comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get} # Admin routes for comments
-      comments.admin_page_comments 'admin/pages/:page_id/comments/:action'  # This route allows us to nicely pull up comments for a particular page
-      comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action' # This route pulls up a particular comment for a particular page
+      comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get}
+      comments.admin_page_comments 'admin/pages/:page_id/comments/:action'
+      comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action'
     end
+    # This needs to be last, otherwise it hoses the admin routes.
+    map.resources :comments, :name_prefix => "page_", :path_prefix => "*url", :controller => "comments"
   end
   
   def activate
