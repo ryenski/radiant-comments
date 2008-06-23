@@ -3,6 +3,7 @@ class CommentsController < ApplicationController
   no_login_required
   skip_before_filter :verify_authenticity_token
   before_filter :find_page
+  before_filter :set_host
 
   def create
     comment = @page.comments.build(params[:comment])
@@ -28,6 +29,10 @@ class CommentsController < ApplicationController
   
     def find_page
       @page = Page.find_by_url(params[:url].join("/"))
+    end
+    
+    def set_host
+      CommentMailer.default_url_options[:host] = request.host_with_port
     end
   
 end
