@@ -14,14 +14,14 @@ module CommentTags
     Renders the contained elements if the page has comments. 
   }
   tag "if_comments" do |tag|
-    tag.expand unless tag.locals.page.approved_comments.empty?
+    tag.expand if tag.locals.page.has_visible_comments?
   end
   
   desc %{
     Renders the contained elements if the page has comments _or_ comment is enabled on it.
   }
   tag "if_comments_or_enable_comments" do |tag|
-    tag.expand if(!tag.locals.page.approved_comments.empty? || tag.locals.page.enable_comments?)
+    tag.expand if(tag.locals.page.has_visible_comments? || tag.locals.page.enable_comments?)
   end
   
   desc %{ 

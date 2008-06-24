@@ -25,6 +25,10 @@ class CommentsExtension < Radiant::Extension
       has_many :unapproved_comments, :class_name => "Comment", :conditions => "comments.approved_at IS NULL", :order => "created_at ASC"
       attr_accessor :last_comment
       attr_accessor :selected_comment
+      
+      def has_visible_comments?
+        !(approved_comments.empty? && selected_comment.nil?)
+      end
     end
     
     if admin.respond_to? :page
