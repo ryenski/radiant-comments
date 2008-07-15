@@ -69,7 +69,7 @@ class Comment < ActiveRecord::Base
     end
     
     def filter_from_form
-      TextFilter.descendants.find { |f| f.filter_name = filter_id }
+      TextFilter.descendants.find { |f| f.filter_name == filter_id }
     end
     
     def filtering_enabled?
