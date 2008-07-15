@@ -41,9 +41,12 @@ class Comment < ActiveRecord::Base
     end
   end
   
+  def unapproved?
+    !approved?
+  end
+  
   def approved?
-    return true if approved_at
-    return false
+    !approved_at.nil?
   end
   
   def approve!
