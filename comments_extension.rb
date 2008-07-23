@@ -7,6 +7,8 @@ class CommentsExtension < Radiant::Extension
   
   define_routes do |map|
     map.with_options(:controller => 'admin/comments') do |comments| 
+      comments.comments_status 'admin/comments/:status'
+      comments.comments_status 'admin/comments/:status.:format'
       comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get}
       comments.admin_page_comments 'admin/pages/:page_id/comments/:action'
       comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action'
@@ -37,7 +39,7 @@ class CommentsExtension < Radiant::Extension
       admin.page.index.add :node, "index_view_comments"
     end
     
-    admin.tabs.add "Comments", "/admin/comments?status=unapproved", :visibility => [:all]
+    admin.tabs.add "Comments", "/admin/comments/unapproved", :visibility => [:all]
 
     { 'notification' => 'false',
       'notification_from' => '',
@@ -47,6 +49,35 @@ class CommentsExtension < Radiant::Extension
       'akismet_url' => '',
       'filters_enabled' => 'true',
     }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
+    
+    require "fastercsv"
+    
+    ActiveRecord::Base.class_eval do
+      def self.to_csv(*args)
+        find(:all).to_csv(*args)
+      end
+
+      def export_columns(format = nil)
+        self.class.content_columns.map(&:name) - ['created_at', 'updated_at']
+      end
+
+      def to_row(format = nil)
+        export_columns(format).map { |c| self.send(c) }
+      end
+    end
+    
+    Array.class_eval do
+      def to_csv(options = {})
+        return "" if first.nil?
+        if all? { |e| e.respond_to?(:to_row) }
+          header_row = first.export_columns(options[:format]).to_csv
+          content_rows = map { |e| e.to_row(options[:format]) }.map(&:to_csv)
+          ([header_row] + content_rows).join
+        else
+          FasterCSV.generate_line(self, options)
+        end
+      end
+    end    
   end
   
   def deactivate

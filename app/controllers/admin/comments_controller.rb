@@ -10,7 +10,16 @@ class Admin::CommentsController < ApplicationController
       nil
     end
     @page = Page.find(params[:page_id]) if params[:page_id]
-    @comments = @page.nil? ? Comment.paginate(:page => params[:page], :order => "created_at DESC", :conditions => conditions) : @page.comments.paginate(:page => params[:page], :conditions => conditions)
+    @comments = if @page.nil? 
+      Comment.paginate(:page => params[:page], :order => "created_at DESC", :conditions => conditions)
+    else
+      @page.comments.paginate(:page => params[:page], :conditions => conditions)
+    end
+    
+    respond_to do |format|
+      format.html
+      format.csv  { render :text => @comments.to_csv }
+    end
   end
   
   def destroy
