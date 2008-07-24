@@ -23,4 +23,16 @@ class CommentTest < Test::Unit::TestCase
     assert_equal(comment.content, comment_stored.content)
   end
   
+  def test_download_csv_routes
+    assert_routing "admin/comments/all",
+      {:controller => "admin/comments", :action => "index", :status => "all"}
+    assert_routing "admin/comments/all.csv",
+      {:controller => "admin/comments", :action => "index", :status => "all", :format => 'csv'}
+
+    assert_routing "admin/pages/6/comments/all.csv",
+      {:controller => "admin/comments", :action => "index", :status => "all", :format => 'csv', :page_id => "6"}
+    assert_generates "admin/pages/6/comments/all.csv",
+      {:controller => "admin/comments", :action => "index", :format => 'csv', :page_id => "6"}
+  end
+  
 end

@@ -7,8 +7,11 @@ class CommentsExtension < Radiant::Extension
   
   define_routes do |map|
     map.with_options(:controller => 'admin/comments') do |comments| 
-      comments.comments_status 'admin/comments/:status'
-      comments.comments_status 'admin/comments/:status.:format'
+      comments.connect 'admin/comments/:status'
+      comments.connect 'admin/comments/:status.:format'
+      comments.connect 'admin/pages/:page_id/comments/:status.:format'
+      comments.connect 'admin/pages/:page_id/comments/all.:format'
+      
       comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get}
       comments.admin_page_comments 'admin/pages/:page_id/comments/:action'
       comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action'
