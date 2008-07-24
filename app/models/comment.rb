@@ -6,8 +6,12 @@ class Comment < ActiveRecord::Base
   before_save :apply_filter
   
   def export_columns(format = nil)
-    %w[approved? author content created_at referrer]
-  end  
+    %w[approved? author content created_at_for_export referrer]
+  end
+  
+  def created_at_for_export
+    created_at.strftime "%m/%d/%Y"
+  end
   
   def self.per_page
     50
