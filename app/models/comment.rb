@@ -4,7 +4,7 @@ class Comment < ActiveRecord::Base
   
   before_save :auto_approve
   before_save :apply_filter
-  
+    
   def self.per_page
     50
   end
