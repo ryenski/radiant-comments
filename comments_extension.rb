@@ -5,9 +5,9 @@ class CommentsExtension < Radiant::Extension
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/ntalbott/radiant-comments/tree/master"
   
-  define_routes do |map|
+  define_routes do |map|                
     map.with_options(:controller => 'admin/comments') do |comments| 
-      comments.connect 'admin/comments/:status'
+      comments.connect 'admin/comments/:status', :status => /all|approved|unapproved/, :conditions => { :method => :get }
       comments.connect 'admin/comments/:status.:format'
       comments.connect 'admin/pages/:page_id/comments/:status.:format'
       comments.connect 'admin/pages/:page_id/comments/all.:format'
