@@ -19,6 +19,13 @@ Remember to run the migration. This _WILL_ delete any snippets named 'comment', 
   rake radiant:extensions:comments:migrate
 
 To enable spam protection, you will need to set your Akismet key and url in the Radiant config.
+For example:
+
+script/console production
+Radiant::Config['comments.akismet_key'] = "6a009ca6ab4e"
+Radiant::Config['comments.akismet_url'] = "yoursite.com"
+exit
+
 
 To customize the CSV fields you can add an initializer like this:
 
