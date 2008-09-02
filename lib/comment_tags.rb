@@ -11,6 +11,13 @@ module CommentTags
   end
   
   desc %{
+    Renders the contained elements unless comments are enabled on the page. 
+  }
+  tag "unless_enable_comments" do |tag|
+    tag.expand unless (tag.locals.page.enable_comments?)
+  end
+  
+  desc %{
     Renders the contained elements if the page has comments. 
   }
   tag "if_comments" do |tag|
