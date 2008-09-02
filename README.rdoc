@@ -12,6 +12,12 @@ This software "works for me", but it may not work for you, depending on your par
 * Requires will_paginate Rails plugin (http://github.com/mislav/will_paginate/tree/master)
 * Requires fastercsv 1.2.3 or greater.
 
+== Installation 
+
+To copy the supporting files to your public directory, run: 
+
+  rake radiant:extensions:comments:update
+
 == Usage
 
 Remember to run the migration. This _WILL_ delete any snippets named 'comment', 'comments' and 'comment_form' if these exist.
