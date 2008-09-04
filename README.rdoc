@@ -56,6 +56,7 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 
 == Contributors
 
+* Jim Gay of http://www.saturnflyer.com, sponsored by http://ignitesocialmedia.com/.
 * Michael Hale of http://halethegeek.com/, sponsored by http://ignitesocialmedia.com/.
 * Nathaniel Talbott of http://terralien.com/, sponsored by http://ignitesocialmedia.com/.
 * John Croisant
