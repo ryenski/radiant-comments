@@ -13,10 +13,15 @@ class Comment < ActiveRecord::Base
     self.author_ip = request.remote_ip
     self.user_agent = request.env['HTTP_USER_AGENT']
     self.referrer = request.env['HTTP_REFERER']
+ #   self.xff = request.env['HTTP_X_FORWARDED_FOR']
   end
   
   def akismet
     @akismet ||= Akismet.new(Radiant::Config['comments.akismet_key'], Radiant::Config['comments.akismet_url'])
+  end
+  
+  def mollom
+    @mollom ||= Mollom.new(:private_key => Radiant::Config['comments.mollom_privatekey'], :public_key => Radiant::Config['comments.mollom_publickey'])
   end
   
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
@@ -36,6 +41,14 @@ class Comment < ActiveRecord::Base
         self.content,              # comment text
         {}                         # other
       )
+      elsif mollom.key_ok?
+        response = mollom.check_content(
+          :author_name => self.author,            # author name     
+          :author_mail => self.author_email,         # author email
+          :author_url => self.author_url,           # author url
+          :post_body => self.content              # comment text
+          )
+       response.ham?  
     else
       false
     end

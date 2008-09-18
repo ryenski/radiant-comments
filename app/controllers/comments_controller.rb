@@ -23,6 +23,8 @@ class CommentsController < ApplicationController
   rescue ActiveRecord::RecordInvalid
     @page.last_comment = comment
     render :text => @page.render
+ # rescue Comments::MollomUnsure
+    #flash, en render :text => @page.render
   end
   
   private

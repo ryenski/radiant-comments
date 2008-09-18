@@ -50,6 +50,8 @@ class CommentsExtension < Radiant::Extension
       'notification_site_name' => '',
       'akismet_key' => '',
       'akismet_url' => '',
+      'mollom_privatekey' => '',
+      'mollom_publickey' => '',
       'filters_enabled' => 'true',
     }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
     
