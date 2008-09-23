@@ -79,6 +79,6 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 * Keith Bingman
 * Sean Cribbs
 * Ryan Heneise
-* Frank Louwers
+* Frank Louwers (thanks to Jan De Poorter for the Mollom ruby lib)
 
 If you contribute, go ahead and add your name to the list! 
