@@ -28,7 +28,9 @@ class CommentsController < ApplicationController
   private
   
     def find_page
-      @page = Page.find_by_url(params[:url].join("/"))
+      url = params[:url]
+      url.shift if defined?(SiteLanguage) && SiteLanguage.count > 1
+      @page = Page.find_by_url(url.join("/"))
     end
     
     def set_host
