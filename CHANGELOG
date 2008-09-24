@@ -1,5 +1,6 @@
 = Git
 
+* Added comments.notify_creator and comments.notify_updater to send emails to the page creator/updater [Jim Gay]
 * Added accept.png icon and rake task to copy it. [ryan@artofmission.com]
 
 = 0.0.5

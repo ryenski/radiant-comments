@@ -48,6 +48,8 @@ class CommentsExtension < Radiant::Extension
       'notification_from' => '',
       'notification_to' => '',
       'notification_site_name' => '',
+      'notify_creator' => 'true',
+      'notify_updater' => 'false',
       'akismet_key' => '',
       'akismet_url' => '',
       'mollom_privatekey' => '',
