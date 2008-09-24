@@ -12,6 +12,10 @@ namespace :radiant do
         end
       end
       
+      task :update => :environment do
+        FileUtils.cp CommentsExtension.root + "/public/images/admin/accept.png", RAILS_ROOT + "/public/images/admin"
+      end
+      
     end
   end
 end

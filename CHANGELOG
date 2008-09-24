@@ -1,3 +1,7 @@
+= Git
+
+* Added accept.png icon and rake task to copy it. [ryan@artofmission.com]
+
 = 0.0.5
 
 * Pluralized the `comments` tag so that it does not conflict with the standard Radiant `comment` tag. [nathaniel@terralien.com]

@@ -2,6 +2,9 @@
 
 * Write Tests.
 * Add user notification message when a comment is posted.
+* captcha mollom implementation
+
+
 
 
 = DONE

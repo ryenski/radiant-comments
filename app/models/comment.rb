@@ -4,6 +4,9 @@ class Comment < ActiveRecord::Base
   
   before_save :auto_approve
   before_save :apply_filter
+  after_save  :save_mollom_servers
+    
+  MOLLOM_SERVER_CACHE = RAILS_ROOT + '/tmp/mollom_servers.yaml'
     
   def self.per_page
     50
@@ -17,6 +20,21 @@ class Comment < ActiveRecord::Base
   
   def akismet
     @akismet ||= Akismet.new(Radiant::Config['comments.akismet_key'], Radiant::Config['comments.akismet_url'])
+  end
+  
+  def save_mollom_servers
+    File.open(MOLLOM_SERVER_CACHE,'w') do |f|
+      f.write mollom.server_list.to_yaml
+    end
+  end
+  
+  def mollom
+    return @mollom if @mollom
+    @mollom ||= Mollom.new(:private_key => Radiant::Config['comments.mollom_privatekey'], :public_key => Radiant::Config['comments.mollom_publickey'])
+    if (File.exists?(MOLLOM_SERVER_CACHE))
+      @mollom.server_list = YAML::load(File.read(MOLLOM_SERVER_CACHE))
+    end    
+    @mollom
   end
   
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
@@ -36,6 +54,14 @@ class Comment < ActiveRecord::Base
         self.content,              # comment text
         {}                         # other
       )
+      elsif mollom.key_ok?
+        response = mollom.check_content(
+          :author_name => self.author,            # author name     
+          :author_mail => self.author_email,         # author email
+          :author_url => self.author_url,           # author url
+          :post_body => self.content              # comment text
+          )
+       response.ham?  
     else
       false
     end
