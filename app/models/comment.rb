@@ -23,8 +23,10 @@ class Comment < ActiveRecord::Base
   end
   
   def save_mollom_servers
-    File.open(MOLLOM_SERVER_CACHE,'w') do |f|
-      f.write mollom.server_list.to_yaml
+    if mollom.key_ok?
+      File.open(MOLLOM_SERVER_CACHE,'w') do |f|
+        f.write mollom.server_list.to_yaml
+      end
     end
   end
   
