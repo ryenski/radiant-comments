@@ -10,10 +10,20 @@ module CommentTags
     tag.expand if (tag.locals.page.enable_comments?)
   end
   
+  # makes more sense to me
+  tag "if_comments_enabled" do |tag|
+    tag.expand if (tag.locals.page.enable_comments?)
+  end
+  
   desc %{
     Renders the contained elements unless comments are enabled on the page. 
   }
   tag "unless_enable_comments" do |tag|
+    tag.expand unless (tag.locals.page.enable_comments?)
+  end
+  
+  # makes more sense to me
+  tag "unless_comments_enabled" do |tag|
     tag.expand unless (tag.locals.page.enable_comments?)
   end
   
@@ -22,6 +32,13 @@ module CommentTags
   }
   tag "if_comments" do |tag|
     tag.expand if tag.locals.page.has_visible_comments?
+  end
+  
+  desc %{
+    Renders the contained elements unless the page has comments. 
+  }
+  tag "unless_comments" do |tag|
+    tag.expand unless tag.locals.page.has_visible_comments?
   end
   
   desc %{
