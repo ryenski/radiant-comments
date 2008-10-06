@@ -64,8 +64,8 @@ class Comment < ActiveRecord::Base
           :author_url => self.author_url,           # author url
           :post_body => self.content              # comment text
           )
-          ham = reponse.ham?
-          self.update_attibute(:mollom_id, response.session_id)
+          ham = response.ham?
+          self.mollom_id = response.session_id
        response.ham?  
     else
       false
