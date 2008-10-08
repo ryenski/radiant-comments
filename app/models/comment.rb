@@ -5,6 +5,8 @@ class Comment < ActiveRecord::Base
   before_save :auto_approve
   before_save :apply_filter
     
+  attr_accessible :author, :author_email, :author_url, :filter_id, :content
+  
   def self.per_page
     50
   end
