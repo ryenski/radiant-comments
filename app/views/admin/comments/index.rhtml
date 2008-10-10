@@ -23,6 +23,8 @@
   </tbody>
 </table>
 
+<p><%= link_to "Delete All Unapproved", destroy_unapproved_comments_url, :method => :delete %></p>
+
 <%= will_paginate @comments %>
 
 <script type="text/javascript">

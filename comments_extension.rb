@@ -7,6 +7,7 @@ class CommentsExtension < Radiant::Extension
   
   define_routes do |map|                
     map.with_options(:controller => 'admin/comments') do |comments| 
+      comments.destroy_unapproved_comments '/admin/comments/unapproved/destroy', :action => 'destroy_unapproved', :conditions => {:method => :delete}
       comments.connect 'admin/comments/:status', :status => /all|approved|unapproved/, :conditions => { :method => :get }
       comments.connect 'admin/comments/:status.:format'
       comments.connect 'admin/pages/:page_id/comments/:status.:format'
