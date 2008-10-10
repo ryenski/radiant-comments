@@ -29,6 +29,15 @@ class Admin::CommentsController < ApplicationController
     ResponseCache.instance.expire_response(@comment.page.url)
     redirect_to :back
   end
+  
+  def destroy_unapproved
+    if Comment.destroy_all('approved_at is NULL')
+      flash[:notice] = "You have removed all unapproved comments."
+    else
+      flash[:notice] = "I was unable to remove all unapproved comments."
+    end
+    redirect_to :back
+  end
 
   def edit
     @comment = Comment.find(params[:id])
