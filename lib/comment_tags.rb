@@ -227,8 +227,8 @@ module CommentTags
   tag "comments:filter_box_tag" do |tag|
     attrs = tag.attr.symbolize_keys
     value = attrs.delete(:value)
-
-    r =  %{<select name="comment[#{attrs[:name]}]"}
+    name = attrs.delete(:name)
+    r =  %{<select name="comment[#{name}]"}
     unless attrs.empty?
       r << " "
       r << attrs.map {|k,v| %Q(#{k}="#{v}") }.join(" ")
