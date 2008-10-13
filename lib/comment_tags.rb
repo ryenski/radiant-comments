@@ -226,14 +226,19 @@ module CommentTags
   desc %{Build a drop_box form field for the filters avaiable.}
   tag "comments:filter_box_tag" do |tag|
     attrs = tag.attr.symbolize_keys
+    value = attrs.delete(:value)
+
     r =  %{<select name="comment[#{attrs[:name]}]"}
-    r << %{ size="#{attrs[:size]}"} if attrs[:size]
+    unless attrs.empty?
+      r << " "
+      r << attrs.map {|k,v| %Q(#{k}="#{v}") }.join(" ")
+    end
     r << %{>}
 
     TextFilter.descendants.each do |filter|
 
       r << %{<option value="#{filter.filter_name}"}
-      r << %{ selected } if attrs[:value] == filter.filter_name
+      r << %{ selected="selected"} if value == filter.filter_name
       r << %{>#{filter.filter_name}</option>}
 
     end
