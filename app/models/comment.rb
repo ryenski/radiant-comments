@@ -105,7 +105,7 @@ class Comment < ActiveRecord::Base
   end
   
   private
-  
+
     def auto_approve
       self.approved_at = Time.now if auto_approve?
     end
