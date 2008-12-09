@@ -122,7 +122,7 @@ describe Comment do
       :breadcrumb => title,
       :slug => title.symbolize.to_s.gsub("_", "-"),
       :class_name => nil,
-      :status_id => 3,
+      :status_id => Status[:published].id,
       :published_at => Time.now.to_s(:db)
     }.update(attributes)
     attributes[:parent_id] = 10
