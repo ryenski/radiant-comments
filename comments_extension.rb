@@ -7,6 +7,7 @@ class CommentsExtension < Radiant::Extension
   
   define_routes do |map|                
     map.with_options(:controller => 'admin/comments') do |comments| 
+      comments.destroy_unapproved_comments '/admin/comments/unapproved/destroy', :action => 'destroy_unapproved', :conditions => {:method => :delete}
       comments.connect 'admin/comments/:status', :status => /all|approved|unapproved/, :conditions => { :method => :get }
       comments.connect 'admin/comments/:status.:format'
       comments.connect 'admin/pages/:page_id/comments/:status.:format'
@@ -43,20 +44,20 @@ class CommentsExtension < Radiant::Extension
     end
     
     admin.tabs.add "Comments", "/admin/comments/unapproved", :visibility => [:all]
-
-    { 'notification' => 'false',
-      'notification_from' => '',
-      'notification_to' => '',
-      'notification_site_name' => '',
-      'notify_creator' => 'true',
-      'notify_updater' => 'false',
-      'akismet_key' => '',
-      'akismet_url' => '',
-      'mollom_privatekey' => '',
-      'mollom_publickey' => '',
-      'filters_enabled' => 'true',
-    }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
-    
+    if Radiant::Config.table_exists?
+      { 'notification' => 'false',
+        'notification_from' => '',
+        'notification_to' => '',
+        'notification_site_name' => '',
+        'notify_creator' => 'true',
+        'notify_updater' => 'false',
+        'akismet_key' => '',
+        'akismet_url' => '',
+        'mollom_privatekey' => '',
+        'mollom_publickey' => '',
+        'filters_enabled' => 'true',
+      }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
+    end
     require "fastercsv"
     
     ActiveRecord::Base.class_eval do

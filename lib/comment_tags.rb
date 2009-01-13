@@ -1,22 +1,21 @@
 module CommentTags
   include Radiant::Taggable
-  
+
   desc "Provides tags and behaviors to support comments in Radiant."
-  
+
   desc %{
-    Renders the contained elements if comments are enabled on the page. 
+    Renders the contained elements if comments are enabled on the page.
   }
   tag "if_enable_comments" do |tag|
     tag.expand if (tag.locals.page.enable_comments?)
   end
-  
   # makes more sense to me
   tag "if_comments_enabled" do |tag|
     tag.expand if (tag.locals.page.enable_comments?)
   end
   
   desc %{
-    Renders the contained elements unless comments are enabled on the page. 
+    Renders the contained elements unless comments are enabled on the page.
   }
   tag "unless_enable_comments" do |tag|
     tag.expand unless (tag.locals.page.enable_comments?)
@@ -28,12 +27,12 @@ module CommentTags
   end
   
   desc %{
-    Renders the contained elements if the page has comments. 
+    Renders the contained elements if the page has comments.
   }
   tag "if_comments" do |tag|
     tag.expand if tag.locals.page.has_visible_comments?
   end
-  
+
   desc %{
     Renders the contained elements unless the page has comments. 
   }
@@ -47,17 +46,17 @@ module CommentTags
   tag "if_comments_or_enable_comments" do |tag|
     tag.expand if(tag.locals.page.has_visible_comments? || tag.locals.page.enable_comments?)
   end
-  
-  desc %{ 
+
+  desc %{
     Gives access to comment-related tags
   }
   tag "comments" do |tag|
     comments = tag.locals.page.approved_comments
     tag.expand
   end
-  
+
   desc %{
-    Cycles through each comment and renders the enclosed tags for each. 
+    Cycles through each comment and renders the enclosed tags for each.
   }
   tag "comments:each" do |tag|
     page = tag.locals.page
@@ -71,9 +70,9 @@ module CommentTags
     end
     result
   end
-  
+
   desc %{
-    Gives access to the particular fields for each comment. 
+    Gives access to the particular fields for each comment.
   }
   tag "comments:field" do |tag|
     tag.expand
@@ -96,11 +95,11 @@ module CommentTags
       value
     end
   end
-  
+
   desc %{
-    Renders the date a comment was created. 
-    
-    *Usage:* 
+    Renders the date a comment was created.
+
+    *Usage:*
     <pre><code><r:date [format="%A, %B %d, %Y"] /></code></pre>
   }
   tag 'comments:field:date' do |tag|
@@ -109,7 +108,7 @@ module CommentTags
     date = comment.created_at
     date.strftime(format)
   end
-  
+
   desc %{
     Renders a link if there's an author_url, otherwise just the author's name.
   }
@@ -120,7 +119,7 @@ module CommentTags
       %(<a href="http://#{tag.locals.comment.author_url}">#{tag.locals.comment.author}</a>)
     end
   end
-  
+
   desc %{
     Renders the contained elements if the comment has an author_url specified.
   }
@@ -135,24 +134,46 @@ module CommentTags
   tag "comments:field:if_selected" do |tag|
     tag.expand if tag.locals.comment == tag.locals.page.selected_comment
   end
-  
+
   desc %{
     Renders the contained elements if the comment has been approved
   }
   tag "comments:field:if_approved" do |tag|
     tag.expand if tag.locals.comment.approved?
   end
-  
+
   desc %{
     Renders the contained elements if the comment has not been approved
   }
   tag "comments:field:unless_approved" do |tag|
     tag.expand unless tag.locals.comment.approved?
   end
-  
+
   desc %{
-    Renders a comment form. 
-    
+    Renders a Gravatar URL for the author of the comment.
+  }
+  tag "comments:field:gravatar_url" do |tag|
+    email = tag.locals.comment.author_email
+    size = tag.attr['size']
+    format = tag.attr['format']
+    rating = tag.attr['rating']
+    default = tag.attr['default']
+    md5 = Digest::MD5.hexdigest(email)
+    returning "http://www.gravatar.com/avatar/#{md5}" do |url|
+      url << ".#{format.downcase}" if format
+      if size || rating || default
+        attrs = []
+        attrs << "s=#{size}" if size
+        attrs << "d=#{default}" if default
+        attrs << "r=#{rating.downcase}" if rating
+        url << "?#{attrs.join('&')}"
+      end
+    end
+  end
+
+  desc %{
+    Renders a comment form.
+
     *Usage:*
     <r:comment:form>...</r:comment:form>
   }
@@ -164,7 +185,7 @@ module CommentTags
       </form>
     }
   end
-  
+
   tag 'comments:error' do |tag|
     if comment = tag.locals.page.last_comment
       if on = tag.attr['on']
@@ -177,7 +198,7 @@ module CommentTags
       end
     end
   end
-  
+
   tag 'comments:error:message' do |tag|
     tag.locals.error_message
   end
@@ -196,7 +217,7 @@ module CommentTags
       r << %{ />}
     end
   end
-  
+
   %w(submit reset).each do |type|
     desc %{Builds a #{type} form button for comments.}
     tag "comments:#{type}_tag" do |tag|
@@ -209,7 +230,7 @@ module CommentTags
       r << %{ />}
     end
   end
-  
+
   desc %{Builds a text_area form field for comments.}
   tag "comments:text_area_tag" do |tag|
     attrs = tag.attr.symbolize_keys
@@ -225,25 +246,30 @@ module CommentTags
     end
     r << %{</textarea>}
   end
-  
+
   desc %{Build a drop_box form field for the filters avaiable.}
   tag "comments:filter_box_tag" do |tag|
     attrs = tag.attr.symbolize_keys
-    r =  %{<select name="comment[#{attrs[:name]}]"}
-    r << %{ size="#{attrs[:size]}"} if attrs[:size]
-    r << %{>}
-    
-    TextFilter.descendants.each do |filter| 
-      
-      r << %{<option value="#{filter.filter_name}"}
-      r << %{ selected } if attrs[:value] == filter.filter_name
-      r << %{>#{filter.filter_name}</option>}
-      
+    value = attrs.delete(:value)
+    name = attrs.delete(:name)
+    r =  %{<select name="comment[#{name}]"}
+    unless attrs.empty?
+      r << " "
+      r << attrs.map {|k,v| %Q(#{k}="#{v}") }.join(" ")
     end
-      
+    r << %{>}
+
+    TextFilter.descendants.each do |filter|
+
+      r << %{<option value="#{filter.filter_name}"}
+      r << %{ selected="selected"} if value == filter.filter_name
+      r << %{>#{filter.filter_name}</option>}
+
+    end
+
     r << %{</select>}
   end
-  
+
   desc %{Prints the number of comments. }
   tag "comments:count" do |tag|
     tag.locals.page.approved_comments.count

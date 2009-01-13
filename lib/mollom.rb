@@ -7,6 +7,10 @@ require 'base64'
 
 class Mollom
   API_VERSION = '1.0'
+  STATIC_SERVER_LIST = [{:proto => 'http', :host => 'xmlrpc3.mollom.com'},
+                        {:proto => 'http', :host => 'xmlrpc2.mollom.com'},
+                        {:proto => 'http', :host => 'xmlrpc1.mollom.com'}].freeze
+  
   module Errors
     Standard = 1000
     Refresh = 1100
@@ -14,7 +18,6 @@ class Mollom
   end
 
   attr_accessor :private_key, :public_key
-  attr_writer :server_list
 
   # Creates a new Mollom object. Takes +private_key+ and +public_key+ as keys.
   # 
@@ -84,7 +87,7 @@ class Mollom
 
   # Standard check to see if your public/private keypair are recognized. Takes no options
   def key_ok?
-    return (!@private_key.blank? && !@public_key.blank? && send_command('mollom.verifyKey'))
+    return send_command('mollom.verifyKey')
   rescue XMLRPC::FaultException
     return false
   end
@@ -123,20 +126,41 @@ class Mollom
   # Takes an optional parameter +refresh+, which resets the cached value.
   #
   #  mollom.server_list
-  #  # => [{:proto=>"http", :ip=>"88.151.243.81"}, {:proto=>"http", :ip=>"82.103.131.136"}]
+  #  # => [{:proto=>"http", :host=>"88.151.243.81"}, {:proto=>"http", :host=>"82.103.131.136"}]
   def server_list refresh = false
-    @server_list = nil if refresh
-    @server_list ||= XMLRPC::Client.new("xmlrpc.mollom.com", "/#{API_VERSION}").call('mollom.getServerList', authentication_hash).collect do |server| 
-      proto, ip = server.split('://')
-      {:proto => proto, :ip => ip}
+    return @server_list if @server_list && refresh
+    STATIC_SERVER_LIST.each do |static_server|
+      @server_list = get_server_list_from(static_server)
+      return @server_list if @server_list
+    end
+    # Should have returned a server_list here..
+    raise(Error.new("Can't get mollom server-list"))
+  end
+  
+  # Sets the server list used to contact Mollom. This should be used to set the list of cached servers.
+  #
+  # If you try to set a faulty server list, the function will silently fail, so we can get the server-list from Mollom.
+  def server_list=(list)
+    # Check if we get an actual serverlist-array
+    if list.is_a?(Array) && list.all? {|hash| hash.has_key?(:host) && hash.has_key?(:proto) } 
+      @server_list = list
     end
   end
 
   private
+  def get_server_list_from(server)
+    XMLRPC::Client.new(server[:host], "/#{API_VERSION}").call('mollom.getServerList', authentication_hash).collect do |server| 
+        proto, ip = server.split('://')
+        {:proto => proto, :host => ip}
+    end
+  rescue
+    nil
+  end
+  
   def send_command(command, data = {})
     server_list.each do |server|
       begin
-        return XMLRPC::Client.new(server[:ip], "/#{API_VERSION}").call(command, data.merge(authentication_hash))
+        return XMLRPC::Client.new(server[:host], "/#{API_VERSION}").call(command, data.merge(authentication_hash))
       # TODO: Rescue more stuff (Connection Timeout and such)
       rescue XMLRPC::FaultException => error
         case error.faultCode

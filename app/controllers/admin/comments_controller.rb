@@ -1,5 +1,5 @@
 class Admin::CommentsController < ApplicationController
-  
+
   def index
     conditions = case params[:status]
     when "approved"
@@ -15,13 +15,13 @@ class Admin::CommentsController < ApplicationController
     else
       @page.comments.paginate(:page => params[:page], :conditions => conditions)
     end
-    
+
     respond_to do |format|
       format.html
       format.csv  { render :text => @comments.to_csv }
     end
   end
-  
+
   def destroy
     @comment = Comment.find(params[:id])
     @comment.destroy
@@ -30,10 +30,19 @@ class Admin::CommentsController < ApplicationController
     redirect_to :back
   end
   
+  def destroy_unapproved
+    if Comment.destroy_all('approved_at is NULL')
+      flash[:notice] = "You have removed all unapproved comments."
+    else
+      flash[:notice] = "I was unable to remove all unapproved comments."
+    end
+    redirect_to :back
+  end
+
   def edit
     @comment = Comment.find(params[:id])
   end
-  
+
   def update
     @comment = Comment.find(params[:id])
     begin
@@ -48,7 +57,7 @@ class Admin::CommentsController < ApplicationController
       flash[:notice] = "There was an error saving the comment"
     end
   end
-  
+
   def enable
     @page = Page.find(params[:page_id])
     @page.enable_comments = 1
@@ -56,28 +65,36 @@ class Admin::CommentsController < ApplicationController
     flash[:notice] = "Comments has been enabled for #{@page.title}"
     redirect_to page_index_path
   end
-  
+
   def approve
     @comment = Comment.find(params[:id])
-    @comment.approve!
+    begin
+      @comment.approve!
+    rescue Comment::AntispamWarning => e
+      antispamnotice = "The antispam engine gave a warning: #{e}<br />"
+    end
     ResponseCache.instance.expire_response(@comment.page.url)
-    flash[:notice] = "Comment was successfully approved on page #{@comment.page.title}"
+    flash[:notice] = "Comment was successfully approved on page #{@comment.page.title}" + (antispamnotice ? " (#{antispamnotice})" : "")
     redirect_to :back
   end
-  
+
   def unapprove
     @comment = Comment.find(params[:id])
-    @comment.unapprove!
+    begin
+      @comment.unapprove!
+    rescue Comment::AntispamWarning => e
+      antispamnotice = "The antispam engine gave a warning: #{e}"
+    end
     ResponseCache.instance.expire_response(@comment.page.url)
-    flash[:notice] = "Comment was successfully unapproved on page #{@comment.page.title}"
+    flash[:notice] = "Comment was successfully unapproved on page #{@comment.page.title}" + (antispamnotice ? " (#{antispamnotice})" : "" )
     redirect_to :back
   end
-  
-  
+
+
   protected
-  
-    def announce_comment_removed
-      flash[:notice] = "The comment was successfully removed from the site."
-    end
-  
+
+  def announce_comment_removed
+    flash[:notice] = "The comment was successfully removed from the site."
+  end
+
 end

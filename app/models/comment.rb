@@ -28,6 +28,7 @@ class Comment < ActiveRecord::Base
         f.write mollom.server_list.to_yaml
       end
     end
+  rescue Mollom::Error
   end
   
   def mollom
@@ -63,10 +64,14 @@ class Comment < ActiveRecord::Base
           :author_url => self.author_url,           # author url
           :post_body => self.content              # comment text
           )
+          ham = response.ham?
+          self.mollom_id = response.session_id
        response.ham?  
     else
       false
     end
+  rescue Mollom::Error
+    return false
   end
   
   def unapproved?
@@ -83,6 +88,20 @@ class Comment < ActiveRecord::Base
   
   def unapprove!
     self.update_attribute(:approved_at, nil)
+    # if we have to unapprove, and use mollom, it means
+    # the initial check was false. Submit this to mollom as Spam.
+    # Ideally, we'd need a different feedback for
+    #  - spam
+    #  - profanity
+    #  - unwanted
+    #  - low-quality
+     begin
+     if mollom.key_ok? and !self.mollom_id.empty?
+        mollom.send_feedback :session_id => self.mollom_id, :feedback => 'spam'
+      end
+    rescue Mollom::Error => e
+      raise Comment::AntispamWarning.new(e.to_s)
+    end
   end
   
   private
@@ -116,4 +135,6 @@ class Comment < ActiveRecord::Base
       simple_format(h(content))
     end
   end
+  
+  class AntispamWarning < StandardError; end
 end
