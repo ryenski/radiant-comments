@@ -62,7 +62,7 @@ class Admin::CommentsController < ApplicationController
     @page = Page.find(params[:page_id])
     @page.enable_comments = 1
     @page.save!
-    flash[:notice] = "Comments has been enabled for #{@page.title}"
+    flash[:notice] = "Comments have been enabled for #{@page.title}"
     redirect_to admin_pages_url
   end
 
