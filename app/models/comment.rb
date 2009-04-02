@@ -82,6 +82,14 @@ class Comment < ActiveRecord::Base
     !approved_at.nil?
   end
   
+  def ap_status
+    if approved?
+      "approved"
+    else
+      "unapproved"
+    end
+  end
+  
   def approve!
     self.update_attribute(:approved_at, Time.now)
   end
