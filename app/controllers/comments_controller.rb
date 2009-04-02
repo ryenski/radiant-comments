@@ -16,7 +16,11 @@ class CommentsController < ApplicationController
     comment.save!
     
     ResponseCache.instance.clear
-    CommentMailer.deliver_comment_notification(comment) if Radiant::Config['comments.notification'] == "true"
+    if Radiant::Config['comments.notification'] == "true"
+      if comment.approved? || Radiant::Config['comments.notify_unapproved'] == "true"
+        CommentMailer.deliver_comment_notification(comment)
+      end
+    end
     
     flash[:selected_comment] = comment.id
     redirect_to "#{@page.url}comments#comment-#{comment.id}"
