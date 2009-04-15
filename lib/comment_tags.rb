@@ -274,4 +274,27 @@ module CommentTags
   tag "comments:count" do |tag|
     tag.locals.page.approved_comments.count
   end
+  
+  
+  tag "recent_comments" do |tag|
+    tag.expand
+  end
+  
+  desc %{Returns the last [limit] comments throughout the site.
+    
+    *Usage:*
+    <pre><code><r:recent_comments:each [limit="10"]>...</r:recent_comments:each></code></pre>
+    }
+  tag "recent_comments:each" do |tag|
+    limit = tag.attr['limit'] || 10
+    comments = Comment.find(:all, :conditions => "comments.approved_at IS NOT NULL", :order => "created_at ASC", :limit => limit)
+    result = []
+    comments.each_with_index do |comment, index|
+      tag.locals.comment = comment
+      tag.locals.index = index
+      tag.locals.page = comment.page
+      result << tag.expand
+    end
+    result
+  end
 end
