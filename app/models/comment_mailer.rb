@@ -14,7 +14,7 @@ class CommentMailer < ActionMailer::Base
     page_url  = homepage_url(:host => default_url_options[:host], :port => default_url_options[:port])[0..-2] + comment.page.url
     site_name = Radiant::Config['comments.notification_site_name']
     
-    subject    "[#{site_name}] New comment posted"
+    subject    "[#{site_name}] New #{comment.ap_status} comment posted"
     recipients receivers.join(',')
     from       Radiant::Config['comments.notification_from']
     sent_on    sent_at

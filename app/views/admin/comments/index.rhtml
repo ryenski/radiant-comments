@@ -27,6 +27,14 @@
 
 <%= will_paginate @comments %>
 
+<% if Comment.new.akismet.valid? %>
+  <small class="notice">Protected by <a href="http://akismet.com/">Akismet</a></small>
+<% elsif Comment.new.mollom.key_ok? %>
+  <small class="notice">Protected by <a href="http://mollom.com">Mollom</a></small>
+<% elsif current_user.developer? %>
+  <small class="note">Comments are not protected. Install <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a> to protect against comment spam. Instructions can be found in the README.</small>
+<% end %>
+
 <script type="text/javascript">
 // <![CDATA[
   new RuledTable('comments');

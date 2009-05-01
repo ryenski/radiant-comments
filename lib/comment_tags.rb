@@ -9,14 +9,23 @@ module CommentTags
   tag "if_enable_comments" do |tag|
     tag.expand if (tag.locals.page.enable_comments?)
   end
-
+  # makes more sense to me
+  tag "if_comments_enabled" do |tag|
+    tag.expand if (tag.locals.page.enable_comments?)
+  end
+  
   desc %{
     Renders the contained elements unless comments are enabled on the page.
   }
   tag "unless_enable_comments" do |tag|
     tag.expand unless (tag.locals.page.enable_comments?)
   end
-
+  
+  # makes more sense to me
+  tag "unless_comments_enabled" do |tag|
+    tag.expand unless (tag.locals.page.enable_comments?)
+  end
+  
   desc %{
     Renders the contained elements if the page has comments.
   }
@@ -24,6 +33,13 @@ module CommentTags
     tag.expand if tag.locals.page.has_visible_comments?
   end
 
+  desc %{
+    Renders the contained elements unless the page has comments. 
+  }
+  tag "unless_comments" do |tag|
+    tag.expand unless tag.locals.page.has_visible_comments?
+  end
+  
   desc %{
     Renders the contained elements if the page has comments _or_ comment is enabled on it.
   }
@@ -47,8 +63,9 @@ module CommentTags
     comments = page.approved_comments.to_a
     comments << page.selected_comment if page.selected_comment && page.selected_comment.unapproved?
     result = []
-    comments.each do |comment|
+    comments.each_with_index do |comment, index|
       tag.locals.comment = comment
+      tag.locals.index = index
       result << tag.expand
     end
     result
@@ -60,7 +77,14 @@ module CommentTags
   tag "comments:field" do |tag|
     tag.expand
   end
-
+  
+  desc %{
+    Renders the index number for this comment.
+  }
+  tag 'comments:field:index' do |tag|
+    tag.locals.index + 1
+  end
+  
   %w(id author author_email author_url content content_html filter_id).each do |field|
     desc %{ Print the value of the #{field} field for this comment. }
     tag "comments:field:#{field}" do |tag|
@@ -249,5 +273,28 @@ module CommentTags
   desc %{Prints the number of comments. }
   tag "comments:count" do |tag|
     tag.locals.page.approved_comments.count
+  end
+  
+  
+  tag "recent_comments" do |tag|
+    tag.expand
+  end
+  
+  desc %{Returns the last [limit] comments throughout the site.
+    
+    *Usage:*
+    <pre><code><r:recent_comments:each [limit="10"]>...</r:recent_comments:each></code></pre>
+    }
+  tag "recent_comments:each" do |tag|
+    limit = tag.attr['limit'] || 10
+    comments = Comment.find(:all, :conditions => "comments.approved_at IS NOT NULL", :order => "created_at DESC", :limit => limit)
+    result = []
+    comments.each_with_index do |comment, index|
+      tag.locals.comment = comment
+      tag.locals.index = index
+      tag.locals.page = comment.page
+      result << tag.expand
+    end
+    result
   end
 end
