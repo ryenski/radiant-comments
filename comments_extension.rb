@@ -44,20 +44,6 @@ class CommentsExtension < Radiant::Extension
     end
     
     admin.tabs.add "Comments", "/admin/comments/unapproved", :visibility => [:all]
-    if Radiant::Config.table_exists?
-      { 'notification' => 'false',
-        'notification_from' => '',
-        'notification_to' => '',
-        'notification_site_name' => '',
-        'notify_creator' => 'true',
-        'notify_updater' => 'false',
-        'akismet_key' => '',
-        'akismet_url' => '',
-        'mollom_privatekey' => '',
-        'mollom_publickey' => '',
-        'filters_enabled' => 'true',
-      }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
-    end
     require "fastercsv"
     
     ActiveRecord::Base.class_eval do
