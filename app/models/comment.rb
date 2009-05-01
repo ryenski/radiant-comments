@@ -8,6 +8,8 @@ class Comment < ActiveRecord::Base
     
   MOLLOM_SERVER_CACHE = RAILS_ROOT + '/tmp/mollom_servers.yaml'
     
+  attr_accessible :author, :author_email, :author_url, :filter_id, :content
+  
   def self.per_page
     50
   end
