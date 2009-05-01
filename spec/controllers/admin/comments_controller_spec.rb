@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Admin::CommentsController do
-  scenario :users_and_pages, :comments
+  dataset :users_and_pages, :comments
   before(:each) do
     login_as :admin
   end

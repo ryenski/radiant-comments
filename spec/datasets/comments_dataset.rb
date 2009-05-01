@@ -1,4 +1,4 @@
-class CommentsScenario < Scenario::Base
+class CommentsDataset < Dataset::Base
   uses :pages
   
   def load
