@@ -42,7 +42,9 @@ class Comment < ActiveRecord::Base
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
   # comment, this method will return true
   def auto_approve?
-    if akismet.valid?
+    if passes_simple_spam_filter?
+      true
+    elsif akismet.valid?
       # We do the negation because true means spam, false means ham
       !akismet.commentCheck(
         self.author_ip,            # remote IP
@@ -114,8 +116,16 @@ class Comment < ActiveRecord::Base
   private
   
     def validate_spam_answer
-      if !self.valid_spam_answer.blank? && self.valid_spam_answer != self.spam_answer
+      unless passes_simple_spam_filter?
         self.errors.add :spam_answer, "is not correct."
+      end
+    end
+    
+    def passes_simple_spam_filter?
+      if !self.valid_spam_answer.blank? && self.valid_spam_answer.to_s.downcase.slugify == self.spam_answer.to_s.downcase.slugify
+        true
+      else
+        false
       end
     end
 

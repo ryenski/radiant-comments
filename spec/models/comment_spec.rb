@@ -105,6 +105,13 @@ describe Comment do
       @comment.valid_spam_answer = 'TRUE'
       lambda{ @comment.save! }.should raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Spam answer is not correct.')
     end
+    it "should allow differing capitalization and punctuation in the answers when comparing" do
+      @comment = comments(:first)
+      @comment.valid_spam_answer = "that's   THE    way it ought to be!"
+      @comment.spam_answer = "That's the way it ought to be!"
+      
+      lambda{ @comment.save! }.should_not raise_error
+    end
   end
 
   def create_comment(opts={})
