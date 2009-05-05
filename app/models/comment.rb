@@ -1,14 +1,15 @@
 class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
+  
+  validate :validate_spam_answer
   validates_presence_of :author, :author_email, :content
   
   before_save :auto_approve
   before_save :apply_filter
   after_save  :save_mollom_servers
     
-  MOLLOM_SERVER_CACHE = RAILS_ROOT + '/tmp/mollom_servers.yaml'
-    
-  attr_accessible :author, :author_email, :author_url, :filter_id, :content
+  attr_accessor :valid_spam_answer, :spam_answer
+  attr_accessible :author, :author_email, :author_url, :filter_id, :content, :valid_spam_answer, :spam_answer
   
   def self.per_page
     50
@@ -25,19 +26,15 @@ class Comment < ActiveRecord::Base
   end
   
   def save_mollom_servers
-    if mollom.key_ok?
-      File.open(MOLLOM_SERVER_CACHE,'w') do |f|
-        f.write mollom.server_list.to_yaml
-      end
-    end
-  rescue Mollom::Error
+    Rails.cache.write('MOLLOM_SERVER_CACHE', mollom.server_list.to_yaml) if mollom.key_ok?
+  rescue Mollom::Error #TODO: something with this error...
   end
   
   def mollom
     return @mollom if @mollom
     @mollom ||= Mollom.new(:private_key => Radiant::Config['comments.mollom_privatekey'], :public_key => Radiant::Config['comments.mollom_publickey'])
-    if (File.exists?(MOLLOM_SERVER_CACHE))
-      @mollom.server_list = YAML::load(File.read(MOLLOM_SERVER_CACHE))
+    unless Rails.cache.read('MOLLOM_SERVER_CACHE').blank?
+      @mollom.server_list = YAML::load(Rails.cache.read('MOLLOM_SERVER_CACHE'))
     end    
     @mollom
   end
@@ -115,6 +112,12 @@ class Comment < ActiveRecord::Base
   end
   
   private
+  
+    def validate_spam_answer
+      if !self.valid_spam_answer.blank? && self.valid_spam_answer != self.spam_answer
+        self.errors.add :spam_answer, "is not correct."
+      end
+    end
 
     def auto_approve
       self.approved_at = Time.now if auto_approve?
