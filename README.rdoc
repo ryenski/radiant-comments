@@ -24,7 +24,8 @@ Remember to run the migration. This _WILL_ delete any snippets named 'comment', 
 
   rake radiant:extensions:comments:migrate
 
-To enable spam protection, you will need to set your Akismet or Mollom key and url in the Radiant config.
+To enable spam protection, you will need to use the spam_answer_tag in your comment forms or set your 
+Akismet or Mollom key and url in the Radiant config.
 
 To enable the Akismet protection, get yourself an account at http://akismet.com/personal/ for your personal
 blog or at http://akismet.com/commercial/ for your commercial sites. Then set your personal key and url
@@ -71,6 +72,8 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 
 == Contributors
 
+* Benny Degezelle
+* Frank Louwers (thanks to Jan De Poorter for the Mollom ruby lib)
 * Jim Gay of http://www.saturnflyer.com, sponsored by http://ignitesocialmedia.com/.
 * Michael Hale of http://halethegeek.com/, sponsored by http://ignitesocialmedia.com/.
 * Nathaniel Talbott of http://terralien.com/, sponsored by http://ignitesocialmedia.com/.
@@ -80,7 +83,5 @@ The snippets "comments", "comment" and "comment_form" are created by the migrati
 * Keith Bingman
 * Sean Cribbs
 * Ryan Heneise
-* Frank Louwers (thanks to Jan De Poorter for the Mollom ruby lib)
-* Benny Degezelle
 
 If you contribute, go ahead and add your name to the list! 

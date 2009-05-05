@@ -1,9 +1,9 @@
 require_dependency 'application'
 
 class CommentsExtension < Radiant::Extension
-  version "0.0.5"
+  version "0.0.6"
   description "Adds blog-like comments and comment functionality to pages."
-  url "http://github.com/ntalbott/radiant-comments/tree/master"
+  url "http://github.com/saturnflyer/radiant-comments"
   
   define_routes do |map|                
     map.with_options(:controller => 'admin/comments') do |comments| 
