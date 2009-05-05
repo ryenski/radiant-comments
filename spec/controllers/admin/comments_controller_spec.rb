@@ -27,4 +27,8 @@ describe Admin::CommentsController do
       response.should redirect_to('http://test.host/admin/comments')
     end
   end
+  
+  describe "requesting 'create' with POST" do
+    
+  end
 end
