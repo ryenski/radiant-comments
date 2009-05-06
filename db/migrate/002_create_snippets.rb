@@ -43,6 +43,28 @@ CONTENT
 </r:comments:field>
 CONTENT
     end.save
+    
+    # comment_spam_block snippet
+    Snippet.new do |s|
+      s.name = 'comment_spam_block'
+      s.content = <<CONTENT
+<r:random>
+  <r:error on="spam_answer"><p style="color:red">Answer <r:message /></p></r:error>
+  <r:option>
+    <p><label for="comment[spam_answer]">What day of the week has the letter "h" in it's name?</label> (required)<br />
+    <r:spam_answer_tag answer="Thursday" /></p>
+  </r:option>
+  <r:option>
+    <p><label for="comment[spam_answer]">Yellow and blue together make what color?</label> (required)<br />
+    <r:spam_answer_tag answer="green" /></p>
+  </r:option>
+  <r:option>
+    <p><label for="comment[spam_answer]">What is SPAM spelled backwards?</label> (required)<br />
+    <r:spam_answer_tag answer="MAPS" /></p>
+  </r:option>
+</r:random>
+CONTENT
+    end.save
 
     # Comment_form snippet
     Snippet.new do |s|
@@ -69,6 +91,8 @@ CONTENT
       <r:error on="content"><p style="color:red">Comment <r:message /></p></r:error>
       <label for="comment[filter_id]">Filter: <r:filter_box_tag name="filter_id" value="Textile" /><br />
       <r:text_area_tag name="content" class="required" rows="9" cols="40" /></p>
+
+      <r:snippet name="comment_spam_block" />
 
       <r:submit_tag name="submit" value="Save Comment" />
 
