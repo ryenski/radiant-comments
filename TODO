@@ -1,14 +1,6 @@
 = TODO: 
 
-* Write Tests.
+* Write better specs.
+* Move tests to specs.
 * Add user notification message when a comment is posted.
 * captcha mollom implementation
-
-
-
-
-= DONE
-* Add text filter to comment body.
-* Remove scaffolding and improve admin interface. 
-* Implement Akismet filter.
-* Handle validation messages. 

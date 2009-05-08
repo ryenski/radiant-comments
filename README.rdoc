@@ -1,74 +1,31 @@
 = Radiant Comments Extension
 
-Adds blog-like comment functionality to Radiant. 
+Adds blog-like comment functionality to Radiant. Currently maintained by http://github.com/saturnflyer
 
 == Patches
 
-This software "works for me", but it may not work for you, depending on your particular environment or setup. Feel free to modify it in any way. If you do make changes that would be useful to others, please send a patch to ryan at artofmission (dot you-know-what), and I will see that it gets applied. 
+If you want to contribute features or fixes please write your specs and code and submit pull requests to these github.com users:
+
+- saturnflyer
+- artofmission
 
 == Dependencies
 
-* Requires Radiant 0.6.7 or greater.
+* Requires Radiant 0.7.1 or greater.
 * Requires will_paginate Rails plugin (http://github.com/mislav/will_paginate/tree/master)
 * Requires fastercsv 1.2.3 or greater.
 
 == Installation 
 
-To copy the supporting files to your public directory, run: 
+To install Comments, run: 
 
-  rake radiant:extensions:comments:update
+  rake radiant:extensions:comments:install
 
-== Usage
+This _WILL_ delete any snippets named 'comment', 'comments' and 'comment_form' if these exist.
 
-Remember to run the migration. This _WILL_ delete any snippets named 'comment', 'comments' and 'comment_form' if these exist.
+== More Help
 
-  rake radiant:extensions:comments:migrate
-
-To enable spam protection, you will need to use the spam_answer_tag in your comment forms or set your 
-Akismet or Mollom key and url in the Radiant config.
-
-To enable the Akismet protection, get yourself an account at http://akismet.com/personal/ for your personal
-blog or at http://akismet.com/commercial/ for your commercial sites. Then set your personal key and url
-in the Radiant::Config.
-
-For example:
-
-  script/console production
-  Radiant::Config['comments.akismet_key'] = "6a009ca6ab4e"
-  Radiant::Config['comments.akismet_url'] = "yoursite.com"
-  exit
-
-To enable Mollom protection, get yourself an account at http://mollom.com/user/register, add your site and
-set the public and private key pair in the Radiant::Config.
-
-  script/console production
-  Radiant::Config['comments.mollom_privatekey'] = "deadbeef012345"
-  Radiant::Config['comments.mollom_publickey'] = "c00fee012345"
-  exit
-
-If both services are configured, this plugin will use the Akismet service. Unset the akismet_key if you
-want to use Mollom.
-
-To customize the CSV fields you can add an initializer like this:
-
-  Comment.class_eval do
-    def export_columns(format = nil)
-      %w[approved? author author_email content referrer]
-    end
-  end
-
-=== In your layout: 
-
-  <r:snippet name="comments" />
-
-=== Snippets
-
-The snippets "comments", "comment" and "comment_form" are created by the migration. These can be found under snippets, and can be customised after your needs. Check out the 002 migration to see what they default to.
-
-== Caveats
-
-* Relative urls will *not* work on comment pages if they fail validation, since the page gets re-rendered
-  at a (probably) different level of the hierarchy. Always use absolute urls and you won't have any issues.
+See the included HELP docs here or read them in your Radiant interface with the Help extension installed.
 
 == Contributors
 
