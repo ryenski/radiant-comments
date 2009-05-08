@@ -105,7 +105,7 @@ CONTENT
   
   def self.down
     
-    ["comments", "comment", "comment_form"].each do |snippet|
+    ["comments", "comment", "comment_form", "comment_spam_block"].each do |snippet|
       Snippet.find_by_name(snippet).destroy rescue p "Could not destroy snippet #{snippet}"
     end
    
