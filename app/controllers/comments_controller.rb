@@ -7,12 +7,14 @@ class CommentsController < ApplicationController
 
   def index
     @page.selected_comment = @page.comments.find_by_id(flash[:selected_comment])
+    @page.request = request
     render :text => @page.render
   end
   
   def create
     comment = @page.comments.build(params[:comment])
     comment.request = request
+    comment.request = @page.request = request
     comment.save!
     
     ResponseCache.instance.clear
