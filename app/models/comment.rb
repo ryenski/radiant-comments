@@ -1,5 +1,7 @@
 require 'digest/md5'
 class Comment < ActiveRecord::Base
+  include ActionView::Helpers::SanitizeHelper
+  extend ActionView::Helpers::SanitizeHelper::ClassMethods
   belongs_to :page, :counter_cache => true
   
   validate :validate_spam_answer
@@ -144,11 +146,15 @@ class Comment < ActiveRecord::Base
     end
     
     def apply_filter
-      self.content_html = filter.filter(content)
+      self.content_html = sanitize(filter.filter(content))
     end
     
     def filter
-      filtering_enabled? && filter_from_form || SimpleFilter.new
+      if filtering_enabled? && filter_from_form
+        filter_from_form
+      else
+        SimpleFilter.new
+      end
     end
     
     def filter_from_form

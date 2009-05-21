@@ -37,6 +37,19 @@ describe Comment do
       @comment = comments(:first)
       @comment.stub!(:using_logic_spam_filter?).and_return(false)
     end
+    
+    it "should escape html for content_html when a filter is not selected" do
+      @comment.content = %{<script type="text/javascript">alert('hello')</script>}
+      @comment.save!
+      @comment.content_html.should == %{<p>&lt;script type=&quot;text/javascript&quot;&gt;alert('hello')&lt;/script&gt;</p>}
+    end
+    it "should filter the content for content_html when a filter is selected" do
+      Radiant::Config['comments.filters_enabled'] = 'true'
+      @comment.filter_id = 'Textile'
+      @comment.content = %{*hello*<script type="text/javascript">alert('hello')</script>}
+      @comment.save!
+      @comment.content_html.should == %{<p><strong>hello</strong></p>}
+    end
 
     it "should successfully create comment" do
       @comment.valid?.should be_true
