@@ -312,12 +312,13 @@ module CommentTags
   tag "comments:spam_answer_tag" do |tag|
       attrs = tag.attr.symbolize_keys
       valid_spam_answer = attrs[:answer] || 'hemidemisemiquaver'
+      md5_answer = Digest::MD5.hexdigest(valid_spam_answer.to_slug)
       r = %{<input type="text" id="comment_spam_answer" name="comment[spam_answer]"}
       r << %{ class="#{attrs[:class]}"} if attrs[:class]
       if value = (tag.locals.page.last_comment ? tag.locals.page.last_comment.send(:spam_answer) : '')
         r << %{ value="#{value}" }
       end
       r << %{ />}
-      r << %{<input type="hidden" name="comment[valid_spam_answer]" value="#{valid_spam_answer}" />}
+      r << %{<input type="hidden" name="comment[valid_spam_answer]" value="#{md5_answer}" />}
   end
 end

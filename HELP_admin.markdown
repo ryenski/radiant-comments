@@ -40,3 +40,11 @@ To customize the CSV fields you can add an initializer like this:
         %w[approved? author author_email content referrer]
       end
     end
+    
+## Viewing comments
+
+You may set the per page number of comments in the Radiant configuration options:
+    
+    Radiant::Config['comments.per_page'] = 100
+    
+By default, the number of comments per page is 50.

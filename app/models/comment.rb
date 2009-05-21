@@ -1,3 +1,4 @@
+require 'digest/md5'
 class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
   
@@ -12,7 +13,8 @@ class Comment < ActiveRecord::Base
   attr_accessible :author, :author_email, :author_url, :filter_id, :content, :valid_spam_answer, :spam_answer
   
   def self.per_page
-    50
+    count = Radiant::Config['comments.per_page'].to_i.abs
+    count > 0 ? count : 50
   end
   
   def request=(request)
@@ -42,8 +44,8 @@ class Comment < ActiveRecord::Base
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
   # comment, this method will return true
   def auto_approve?
-    if passes_simple_spam_filter?
-      true
+    if using_logic_spam_filter?
+      passes_logic_spam_filter?
     elsif akismet.valid?
       # We do the negation because true means spam, false means ham
       !akismet.commentCheck(
@@ -58,16 +60,16 @@ class Comment < ActiveRecord::Base
         self.content,              # comment text
         {}                         # other
       )
-      elsif mollom.key_ok?
-        response = mollom.check_content(
-          :author_name => self.author,            # author name     
-          :author_mail => self.author_email,         # author email
-          :author_url => self.author_url,           # author url
-          :post_body => self.content              # comment text
-          )
-          ham = response.ham?
-          self.mollom_id = response.session_id
-       response.ham?  
+    elsif mollom.key_ok?
+      response = mollom.check_content(
+        :author_name => self.author,            # author name     
+        :author_mail => self.author_email,         # author email
+        :author_url => self.author_url,           # author url
+        :post_body => self.content              # comment text
+        )
+      ham = response.ham?
+      self.mollom_id = response.session_id
+      response.ham?  
     else
       false
     end
@@ -116,17 +118,25 @@ class Comment < ActiveRecord::Base
   private
   
     def validate_spam_answer
-      unless passes_simple_spam_filter?
+      if using_logic_spam_filter? && !passes_logic_spam_filter?
         self.errors.add :spam_answer, "is not correct."
       end
     end
     
-    def passes_simple_spam_filter?
-      if !self.valid_spam_answer.blank? && self.valid_spam_answer.to_s.downcase.slugify == self.spam_answer.to_s.downcase.slugify
+    def passes_logic_spam_filter?
+      if valid_spam_answer == hashed_spam_answer
         true
       else
         false
       end
+    end
+    
+    def using_logic_spam_filter?
+      !valid_spam_answer.blank?
+    end
+    
+    def hashed_spam_answer
+      Digest::MD5.hexdigest(spam_answer.to_s.to_slug)
     end
 
     def auto_approve
