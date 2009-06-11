@@ -41,6 +41,11 @@ class Admin::CommentsController < ApplicationController
 
   def edit
     @comment = Comment.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to admin_comments_path
+  end
+  def show
+    redirect_to edit_admin_comment_path(params[:id])
   end
 
   def update
