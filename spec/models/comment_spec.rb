@@ -9,6 +9,7 @@ describe Comment do
     @mollom = mock("mollom", :key_ok? => false, :check_content => @mollom_response, :server_list= => '')
     @page = pages(:home)
     
+    Radiant::Config['comments.auto_approve'] = 'true'
     Akismet.stub!(:new).and_return(@akismet)
     Mollom.stub!(:new).and_return(@mollom)
   end

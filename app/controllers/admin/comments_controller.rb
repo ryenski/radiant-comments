@@ -28,6 +28,8 @@ class Admin::CommentsController < ApplicationController
     announce_comment_removed
     ResponseCache.instance.expire_response(@comment.page.url)
     redirect_to :back
+  rescue ActiveRecord::RecordNotFound
+    redirect_to admin_comments_path
   end
   
   def destroy_unapproved
