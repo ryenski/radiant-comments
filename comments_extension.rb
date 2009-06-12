@@ -1,4 +1,8 @@
-require_dependency 'application'
+begin
+  require_dependency 'application_controller'
+rescue MissingSourceFile
+  require_dependency 'application'
+end
 
 class CommentsExtension < Radiant::Extension
   version "0.0.6"
