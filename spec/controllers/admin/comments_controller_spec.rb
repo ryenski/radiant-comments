@@ -21,6 +21,15 @@ describe Admin::CommentsController do
     end
   end
   
+  describe "requesting 'destroy' with DELETE" do
+    describe "for an invalid id" do
+      it "should redirect to the comments index" do
+        delete :destroy, :id => 999
+        response.should redirect_to('http://test.host/admin/comments')
+      end
+    end
+  end
+  
   describe "requesting 'destroy_unapproved' with DELETE" do
     before(:each) do
       request.env['HTTP_REFERER'] = 'http://test.host/admin/comments'
@@ -42,9 +51,5 @@ describe Admin::CommentsController do
       delete :destroy_unapproved
       response.should redirect_to('http://test.host/admin/comments')
     end
-  end
-  
-  describe "requesting 'create' with POST" do
-    
   end
 end
