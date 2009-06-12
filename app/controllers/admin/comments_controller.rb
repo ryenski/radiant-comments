@@ -26,7 +26,7 @@ class Admin::CommentsController < ApplicationController
     @comment = Comment.find(params[:id])
     @comment.destroy
     announce_comment_removed
-    ResponseCache.instance.expire_response(@comment.page.url)
+    clear_single_page_cache(@comment)
     redirect_to :back
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
@@ -57,7 +57,7 @@ class Admin::CommentsController < ApplicationController
         @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id    
       end
       @comment.update_attributes(params[:comment])
-      ResponseCache.instance.clear
+      Radiant::Cache.clear
       flash[:notice] = "Comment Saved"
       redirect_to :action => :index
     rescue Exception => e
@@ -80,7 +80,7 @@ class Admin::CommentsController < ApplicationController
     rescue Comment::AntispamWarning => e
       antispamnotice = "The antispam engine gave a warning: #{e}<br />"
     end
-    ResponseCache.instance.expire_response(@comment.page.url)
+    clear_single_page_cache(@comment)
     flash[:notice] = "Comment was successfully approved on page #{@comment.page.title}" + (antispamnotice ? " (#{antispamnotice})" : "")
     redirect_to :back
   end
@@ -92,7 +92,7 @@ class Admin::CommentsController < ApplicationController
     rescue Comment::AntispamWarning => e
       antispamnotice = "The antispam engine gave a warning: #{e}"
     end
-    ResponseCache.instance.expire_response(@comment.page.url)
+    clear_single_page_cache(@comment)
     flash[:notice] = "Comment was successfully unapproved on page #{@comment.page.title}" + (antispamnotice ? " (#{antispamnotice})" : "" )
     redirect_to :back
   end
@@ -102,6 +102,13 @@ class Admin::CommentsController < ApplicationController
 
   def announce_comment_removed
     flash[:notice] = "The comment was successfully removed from the site."
+  end
+  
+  def clear_single_page_cache(comment)
+    if comment && comment.page
+      Radiant::Cache::EntityStore.new.purge(comment.page.url)
+      Radiant::Cache::MetaStore.new.purge(comment.page.url)
+    end
   end
 
 end

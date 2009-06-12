@@ -17,7 +17,7 @@ class CommentsController < ApplicationController
     comment.request = @page.request = request
     comment.save!
     
-    ResponseCache.instance.clear
+    clear_single_page_cache(comment)
     if Radiant::Config['comments.notification'] == "true"
       if comment.approved? || Radiant::Config['comments.notify_unapproved'] == "true"
         CommentMailer.deliver_comment_notification(comment)
@@ -43,6 +43,13 @@ class CommentsController < ApplicationController
     
     def set_host
       CommentMailer.default_url_options[:host] = request.host_with_port
+    end
+    
+    def clear_single_page_cache(comment)
+      if comment && comment.page
+        Radiant::Cache::EntityStore.new.purge(comment.page.url)
+        Radiant::Cache::MetaStore.new.purge(comment.page.url)
+      end
     end
   
 end
