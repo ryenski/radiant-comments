@@ -29,6 +29,9 @@ See the included HELP docs here or read them in your Radiant interface with the 
 
 == Contributors
 
+* Sven Schwyn
+* Gerrit Kaiser
+* Stephen Lombardo
 * Benny Degezelle
 * Frank Louwers (thanks to Jan De Poorter for the Mollom ruby lib)
 * Jim Gay of http://www.saturnflyer.com, sponsored by http://ignitesocialmedia.com/.
