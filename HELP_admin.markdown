@@ -7,11 +7,13 @@ You have the capability to use 3 different methods of spam blocking with this ex
 ## Spam Blocking
 
 By default, you will have sample questions that you may ask of your visitors. These questions are difficult
-to easily interpret by robots that may crawl your site looking to leave spam. See your Snippet 'comment\_spam\_block'
-for 
+to easily interpret by robots that may crawl your site looking to leave spam. See your Snippet
+'comment\_spam\_block' for examples of this.
 
-To enable spam protection, you will need to use the spam\_answer\_tag in your comment forms or set your 
-Akismet or Mollom key and url in the Radiant config.
+You will need to use the spam\_answer\_tag in your comment forms to present these questions to the user.
+
+If you wish disable this simple spam protection mechanism, you can do so using the `require_simple_spam_filter`
+config key, e.g. Radiant::Config['comments.require_simple_spam_filter'] = false
 
 To enable the Akismet protection, get yourself an account at http://akismet.com/personal/ for your personal
 blog or at http://akismet.com/commercial/ for your commercial sites. Then set your personal key and url

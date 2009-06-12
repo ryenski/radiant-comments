@@ -47,7 +47,7 @@ class Comment < ActiveRecord::Base
   # comment, this method will return true
   def auto_approve?
     return false if Radiant::Config['comments.auto_approve'] != "true"
-    if using_logic_spam_filter?
+    if simple_spam_filter_required?
       passes_logic_spam_filter?
     elsif akismet.valid?
       # We do the negation because true means spam, false means ham
@@ -121,21 +121,17 @@ class Comment < ActiveRecord::Base
   private
   
     def validate_spam_answer
-      if using_logic_spam_filter? && !passes_logic_spam_filter?
+      if simple_spam_filter_required? && !passes_logic_spam_filter?
         self.errors.add :spam_answer, "is not correct."
       end
     end
     
     def passes_logic_spam_filter?
-      if valid_spam_answer == hashed_spam_answer
-        true
-      else
-        false
-      end
+      valid_spam_answer == hashed_spam_answer
     end
     
-    def using_logic_spam_filter?
-      !valid_spam_answer.blank?
+    def simple_spam_filter_required?
+      !valid_spam_answer.blank? && Radiant::Config['comments.simple_spam_filter_required?']
     end
     
     def hashed_spam_answer

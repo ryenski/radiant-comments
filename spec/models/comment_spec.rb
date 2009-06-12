@@ -151,10 +151,11 @@ describe Comment do
 
   describe "using spam answer" do
     it "should error that the 'Spam answer is not correct' when saved with a spam_answer and valid_spam_answer that do not match" do
+      Radiant::Config['comments.simple_spam_filter_required?'] = true
       @comment = comments(:first)
       @comment.valid_spam_answer = 'TRUE'
       @comment.spam_answer = 'FALSE'
-      @comment.send(:using_logic_spam_filter?).should be_true
+      @comment.send(:simple_spam_filter_required?).should be_true
       lambda{ @comment.save! }.should raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Spam answer is not correct.')
     end
     it "should allow differing capitalization and punctuation in the answers when comparing" do
