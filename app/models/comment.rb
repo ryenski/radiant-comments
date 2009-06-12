@@ -46,6 +46,7 @@ class Comment < ActiveRecord::Base
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
   # comment, this method will return true
   def auto_approve?
+    return false if Radiant::Config['comments.auto_approve'] != "true"
     if using_logic_spam_filter?
       passes_logic_spam_filter?
     elsif akismet.valid?
