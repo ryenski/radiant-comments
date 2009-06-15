@@ -19,6 +19,10 @@ class Comment < ActiveRecord::Base
     count > 0 ? count : 50
   end
   
+  def self.simple_spam_filter_enabled?
+    Radiant::Config['comments.simple_spam_filter_required?']
+  end
+  
   def request=(request)
     self.author_ip = request.remote_ip
     self.user_agent = request.env['HTTP_USER_AGENT']
@@ -131,7 +135,7 @@ class Comment < ActiveRecord::Base
     end
     
     def simple_spam_filter_required?
-      !valid_spam_answer.blank? && Radiant::Config['comments.simple_spam_filter_required?']
+      !valid_spam_answer.blank? && Comment.simple_spam_filter_enabled?
     end
     
     def hashed_spam_answer

@@ -321,4 +321,19 @@ module CommentTags
       r << %{ />}
       r << %{<input type="hidden" name="comment[valid_spam_answer]" value="#{md5_answer}" />}
   end
+
+  desc %{
+    Render the contained elements if using the simple spam filter.
+  }
+  tag "if_comments_use_simple_spam_filter" do |tag|
+    tag.expand if Comment.simple_spam_filter_enabled?
+  end
+
+  desc %{
+    Render the contained elements unless using the simple spam filter.
+  }
+  tag "unless_comments_use_simple_spam_filter" do |tag|
+    tag.expand unless Comment.simple_spam_filter_enabled?
+  end
+
 end
