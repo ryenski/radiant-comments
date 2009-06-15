@@ -1,9 +1,13 @@
-require_dependency 'application'
+begin
+  require_dependency 'application_controller'
+rescue MissingSourceFile
+  require_dependency 'application'
+end
 
 class CommentsExtension < Radiant::Extension
-  version "0.0.5"
+  version "0.0.6"
   description "Adds blog-like comments and comment functionality to pages."
-  url "http://github.com/ntalbott/radiant-comments/tree/master"
+  url "http://github.com/saturnflyer/radiant-comments"
   
   define_routes do |map|                
     map.with_options(:controller => 'admin/comments') do |comments| 
@@ -44,20 +48,6 @@ class CommentsExtension < Radiant::Extension
     end
     
     admin.tabs.add "Comments", "/admin/comments/unapproved", :visibility => [:all]
-    if Radiant::Config.table_exists?
-      { 'notification' => 'false',
-        'notification_from' => '',
-        'notification_to' => '',
-        'notification_site_name' => '',
-        'notify_creator' => 'true',
-        'notify_updater' => 'false',
-        'akismet_key' => '',
-        'akismet_url' => '',
-        'mollom_privatekey' => '',
-        'mollom_publickey' => '',
-        'filters_enabled' => 'true',
-      }.each{|k,v| Radiant::Config.create(:key => "comments.#{k}", :value => v) unless Radiant::Config["comments.#{k}"]}
-    end
     require "fastercsv"
     
     ActiveRecord::Base.class_eval do

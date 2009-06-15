@@ -175,15 +175,20 @@ module CommentTags
     Renders a comment form.
 
     *Usage:*
-    <r:comment:form>...</r:comment:form>
+    <r:comment:form [class="comments" id="comment_form"]>...</r:comment:form>
   }
   tag "comments:form" do |tag|
-    @tag_attr = { :class => "comment_form" }.update( tag.attr.symbolize_keys )
-    results = %Q{
-      <form action="#{tag.locals.page.url}comments" method="post" id="comment_form">
-        #{tag.expand}
-      </form>
-    }
+    attrs = tag.attr.symbolize_keys
+    html_class, html_id = attrs[:class], attrs[:id]
+    r = %Q{ <form action="#{tag.locals.page.url}comments}
+      r << %Q{##{html_id}} unless html_id.blank?
+    r << %{" method="post" } #comlpete the quotes for the action
+      r << %{ id="#{html_id}" } unless html_id.blank?
+      r << %{ class="#{html_class}" } unless html_class.blank?
+    r << '>' #close the form element
+    r <<  tag.expand
+    r << %{</form>}
+    r
   end
 
   tag 'comments:error' do |tag|
@@ -296,5 +301,24 @@ module CommentTags
       result << tag.expand
     end
     result
+  end
+  
+  desc %{
+    Use this to prevent spam bots from filling your site with spam.
+    
+    *Usage:*
+    <pre><code>What day comes after Monday? <r:comments:spam_answer_tag answer="Tuesday" /></code></pre>
+  }
+  tag "comments:spam_answer_tag" do |tag|
+      attrs = tag.attr.symbolize_keys
+      valid_spam_answer = attrs[:answer] || 'hemidemisemiquaver'
+      md5_answer = Digest::MD5.hexdigest(valid_spam_answer.to_slug)
+      r = %{<input type="text" id="comment_spam_answer" name="comment[spam_answer]"}
+      r << %{ class="#{attrs[:class]}"} if attrs[:class]
+      if value = (tag.locals.page.last_comment ? tag.locals.page.last_comment.send(:spam_answer) : '')
+        r << %{ value="#{value}" }
+      end
+      r << %{ />}
+      r << %{<input type="hidden" name="comment[valid_spam_answer]" value="#{md5_answer}" />}
   end
 end

@@ -2,6 +2,9 @@ namespace :radiant do
   namespace :extensions do
     namespace :comments do
       
+      desc "Single task to install and update the Comments extension"
+      task :install => [:environment, :migrate, :update]
+      
       desc "Runs the migration of the Comments extension"
       task :migrate => :environment do
         require 'radiant/extension_migrator'

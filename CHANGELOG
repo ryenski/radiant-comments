@@ -1,5 +1,8 @@
 = Git
 
+= 0.0.6
+
+* Added spam_answer_tag for simple spam protection or CAPTCHA
 * Added comments.notify_creator and comments.notify_updater to send emails to the page creator/updater [Jim Gay]
 * Added accept.png icon and rake task to copy it. [ryan@artofmission.com]
 

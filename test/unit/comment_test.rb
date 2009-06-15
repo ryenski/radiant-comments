@@ -35,4 +35,18 @@ class CommentTest < Test::Unit::TestCase
       {:controller => "admin/comments", :action => "index", :format => 'csv', :page_id => "6"}
   end
   
+  def test_not_allowing_update_of_protected_attribs
+    @comment = Comment.create(
+      :author       => "Evil Approve",
+      :author_email  => "foo@bar.com",
+      :author_url  => "http://www.test.com/",
+      :content     => "Comment approved?",
+      :approved_at => Time.now,
+      :approved_by => 1
+      );
+    @comment = Comment.find_by_author('Evil Approve')
+    assert_nil(@comment.approved_at)
+    assert_nil(@comment.approved_by)
+  end
+  
 end

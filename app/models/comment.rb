@@ -1,15 +1,22 @@
+require 'digest/md5'
 class Comment < ActiveRecord::Base
+  include ActionView::Helpers::SanitizeHelper
+  extend ActionView::Helpers::SanitizeHelper::ClassMethods
   belongs_to :page, :counter_cache => true
+  
+  validate :validate_spam_answer
   validates_presence_of :author, :author_email, :content
   
   before_save :auto_approve
   before_save :apply_filter
   after_save  :save_mollom_servers
     
-  MOLLOM_SERVER_CACHE = RAILS_ROOT + '/tmp/mollom_servers.yaml'
-    
+  attr_accessor :valid_spam_answer, :spam_answer
+  attr_accessible :author, :author_email, :author_url, :filter_id, :content, :valid_spam_answer, :spam_answer
+  
   def self.per_page
-    50
+    count = Radiant::Config['comments.per_page'].to_i.abs
+    count > 0 ? count : 50
   end
   
   def request=(request)
@@ -23,19 +30,15 @@ class Comment < ActiveRecord::Base
   end
   
   def save_mollom_servers
-    if mollom.key_ok?
-      File.open(MOLLOM_SERVER_CACHE,'w') do |f|
-        f.write mollom.server_list.to_yaml
-      end
-    end
-  rescue Mollom::Error
+    Rails.cache.write('MOLLOM_SERVER_CACHE', mollom.server_list.to_yaml) if mollom.key_ok?
+  rescue Mollom::Error #TODO: something with this error...
   end
   
   def mollom
     return @mollom if @mollom
     @mollom ||= Mollom.new(:private_key => Radiant::Config['comments.mollom_privatekey'], :public_key => Radiant::Config['comments.mollom_publickey'])
-    if (File.exists?(MOLLOM_SERVER_CACHE))
-      @mollom.server_list = YAML::load(File.read(MOLLOM_SERVER_CACHE))
+    unless Rails.cache.read('MOLLOM_SERVER_CACHE').blank?
+      @mollom.server_list = YAML::load(Rails.cache.read('MOLLOM_SERVER_CACHE'))
     end    
     @mollom
   end
@@ -43,7 +46,10 @@ class Comment < ActiveRecord::Base
   # If the Akismet details are valid, and Akismet thinks this is a non-spam
   # comment, this method will return true
   def auto_approve?
-    if akismet.valid?
+    return false if Radiant::Config['comments.auto_approve'] != "true"
+    if simple_spam_filter_required?
+      passes_logic_spam_filter?
+    elsif akismet.valid?
       # We do the negation because true means spam, false means ham
       !akismet.commentCheck(
         self.author_ip,            # remote IP
@@ -57,16 +63,16 @@ class Comment < ActiveRecord::Base
         self.content,              # comment text
         {}                         # other
       )
-      elsif mollom.key_ok?
-        response = mollom.check_content(
-          :author_name => self.author,            # author name     
-          :author_mail => self.author_email,         # author email
-          :author_url => self.author_url,           # author url
-          :post_body => self.content              # comment text
-          )
-          ham = response.ham?
-          self.mollom_id = response.session_id
-       response.ham?  
+    elsif mollom.key_ok?
+      response = mollom.check_content(
+        :author_name => self.author,            # author name     
+        :author_mail => self.author_email,         # author email
+        :author_url => self.author_url,           # author url
+        :post_body => self.content              # comment text
+        )
+      ham = response.ham?
+      self.mollom_id = response.session_id
+      response.ham?  
     else
       false
     end
@@ -114,20 +120,46 @@ class Comment < ActiveRecord::Base
   
   private
   
+    def validate_spam_answer
+      if simple_spam_filter_required? && !passes_logic_spam_filter?
+        self.errors.add :spam_answer, "is not correct."
+      end
+    end
+    
+    def passes_logic_spam_filter?
+      valid_spam_answer == hashed_spam_answer
+    end
+    
+    def simple_spam_filter_required?
+      !valid_spam_answer.blank? && Radiant::Config['comments.simple_spam_filter_required?']
+    end
+    
+    def hashed_spam_answer
+      Digest::MD5.hexdigest(spam_answer.to_s.to_slug)
+    end
+
     def auto_approve
       self.approved_at = Time.now if auto_approve?
     end
     
     def apply_filter
-      self.content_html = filter.filter(content)
+      self.content_html = sanitize(filter.filter(content))
     end
     
     def filter
-      filtering_enabled? && filter_from_form || SimpleFilter.new
+      if filtering_enabled? && filter_from_form
+        filter_from_form
+      else
+        SimpleFilter.new
+      end
     end
     
     def filter_from_form
-      TextFilter.descendants.find { |f| f.filter_name == filter_id }
+      unless filter_id.blank?
+        TextFilter.descendants.find { |f| f.filter_name == filter_id }
+      else
+        nil
+      end
     end
     
     def filtering_enabled?
