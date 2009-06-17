@@ -9,6 +9,7 @@ class Comment < ActiveRecord::Base
   
   before_save :auto_approve
   before_save :apply_filter
+  before_save :canonicalize_url
   after_save  :save_mollom_servers
     
   attr_accessor :valid_spam_answer, :spam_answer
@@ -148,6 +149,10 @@ class Comment < ActiveRecord::Base
     
     def apply_filter
       self.content_html = sanitize(filter.filter(content))
+    end
+    
+    def canonicalize_url
+      self.author_url = CGI.escapeHTML(author_url =~ /\Ahttps?:\/\//i ? author_url : "http://#{author_url}") unless author_url.blank?
     end
     
     def filter
