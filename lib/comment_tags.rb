@@ -325,14 +325,14 @@ module CommentTags
   desc %{
     Render the contained elements if using the simple spam filter.
   }
-  tag "if_comments_use_simple_spam_filter" do |tag|
+  tag "if_comments_simple_spam_filter_enabled" do |tag|
     tag.expand if Comment.simple_spam_filter_enabled?
   end
 
   desc %{
     Render the contained elements unless using the simple spam filter.
   }
-  tag "unless_comments_use_simple_spam_filter" do |tag|
+  tag "unless_comments_simple_spam_filter_enabled" do |tag|
     tag.expand unless Comment.simple_spam_filter_enabled?
   end
 
