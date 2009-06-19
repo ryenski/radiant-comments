@@ -138,6 +138,40 @@ describe Comment do
       comment.valid?.should be_false
     end
 
+    it "should add a http:// prefix when author_url does not include a protocol" do
+      url = 'www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == "http://#{url}"
+    end
+
+    it "should not alter author_url with a http:// prefix" do
+      url = 'http://www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
+
+    it "should not alter author_url with a https:// prefix" do
+      url = 'https://www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
+
+    it "should encode special characters in author_url" do
+      url = 'http://example.com/~foo/q?a=1&b=2'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == CGI.escapeHTML(url)
+    end
+    
+    it "should not alter author_url with a HTTP:// prefix" do
+      url = 'HTTP://Www.Example.Com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
   end
   
   describe "not using spam answer" do
