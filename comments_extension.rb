@@ -1,8 +1,4 @@
-begin
-  require_dependency 'application_controller'
-rescue MissingSourceFile
-  require_dependency 'application'
-end
+require_dependency 'application_controller'
 
 class CommentsExtension < Radiant::Extension
   version "0.0.6"
@@ -10,18 +6,14 @@ class CommentsExtension < Radiant::Extension
   url "http://github.com/saturnflyer/radiant-comments"
   
   define_routes do |map|                
+    map.namespace :admin do |admin|
+      admin.connect 'comments/:status', :controller => 'comments', :status => /all|approved|unapproved/, :conditions => { :method => :get }
+      admin.resources :comments, :member => { :remove => :get, :approve => :put, :unapprove => :put }, :collection => {:destroy_unapproved => :delete}
+      admin.page_enable_comments '/pages/:page_id/comments/enable', :controller => 'comments', :action => 'enable', :conditions => {:method => :put}
+    end
     map.with_options(:controller => 'admin/comments') do |comments| 
-      comments.destroy_unapproved_comments '/admin/comments/unapproved/destroy', :action => 'destroy_unapproved', :conditions => {:method => :delete}
-
-      comments.admin_page_enable_comments 'admin/pages/:page_id/comments/enable', :action => 'enable', :conditions => { :method => :put }
-
-      comments.connect 'admin/comments/:status', :status => /all|approved|unapproved/, :conditions => { :method => :get }
-      comments.connect 'admin/comments/:status.:format', :status => /all|approved|unapproved/, :conditions => { :method => :get }
-
       comments.connect 'admin/pages/:page_id/comments/:status', :status => /all|approved|unapproved/, :conditions => { :method => :get }
       comments.connect 'admin/pages/:page_id/comments/:status.:format', :status => /all|approved|unapproved/, :conditions => { :method => :get }
-      
-      comments.resources :comments, :path_prefix => "/admin", :name_prefix => "admin_", :member => {:approve => :get, :unapprove => :get}
       comments.admin_page_comments 'admin/pages/:page_id/comments/:action'
       comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action'
     end

@@ -6,31 +6,6 @@ describe Admin::CommentsController do
     login_as :admin
   end
 
-  describe "routing" do
-    %w(all approved unapproved).each do |status|
-      it "should route to the index action for #{status} comments" do
-        params_from(:get, "/admin/comments/#{status}").should == { :controller => "admin/comments", :action => "index", :status => status }
-      end
-      it "should route to the index action for #{status} comments on the page" do
-        params_from(:get, "/admin/pages/1/comments/#{status}").should == { :controller => "admin/comments", :action => "index", :page_id => "1", :status => status }
-      end
-    end
-
-    it "should route to the destroy_unapproved action" do
-      params_from(:delete, "/admin/comments/unapproved/destroy").should == { :controller => "admin/comments", :action => "destroy_unapproved" }
-    end
-
-    it "should route to the enable action for the page" do
-      params_from(:put, "/admin/pages/1/comments/enable").should == { :controller => "admin/comments", :action => "enable", :page_id => "1" }
-    end
-
-    %w(approve unapprove).each do |action|
-      it "should route to the #{action} action" do
-        params_from(:get, "/admin/comments/1/#{action}").should == { :controller => "admin/comments", :action => action, :id => "1" }
-      end
-    end
-  end
-
   describe "requesting 'show' with GET" do
     it "should redirect to the comment edit screen" do
       id = comments(:first).id

@@ -15,11 +15,11 @@
   </td>
   <td class="controls right">
     <div class="nowrap">
-      <%= link_to("approve", approve_admin_comment_path(comment)) unless comment.approved? %>
-      <%= link_to("unapprove", unapprove_admin_comment_path(comment)) if comment.approved? %>
+      <%= link_to("approve", approve_admin_comment_path(comment), :method => :put) unless comment.approved? %>
+      <%= link_to("unapprove", unapprove_admin_comment_path(comment), :method => :put) if comment.approved? %>
     </div>
     <div>
-      <%= link_to "remove", admin_comment_path(comment), :method => :delete, :confirm => "Are you sure?" %>
+      <%= link_to "delete", admin_comment_path(comment), :method => :delete, :confirm => "Are you sure?" %>
     </div>
     <div>
       <%= link_to "edit", edit_admin_comment_path(comment) %>

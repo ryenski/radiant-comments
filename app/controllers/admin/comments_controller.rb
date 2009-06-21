@@ -46,6 +46,7 @@ class Admin::CommentsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
   end
+  
   def show
     redirect_to edit_admin_comment_path(params[:id])
   end
