@@ -1,5 +1,3 @@
-require_dependency 'application'
-
 class CommentsExtension < Radiant::Extension
   version "0.0.6"
   description "Adds blog-like comments and comment functionality to pages."
