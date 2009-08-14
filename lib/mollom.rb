@@ -24,7 +24,7 @@ class Mollom
   #   Mollom.new(:private_key => 'qopzalnzanzajlazjna', :public_key => 'aksakzaddazidzaodjaz')
   #   # => #<Mollom:0x5b6454 @public_key="aksakzaddazidzaodjaz", @private_key="qopzalnzanzajlazjna">
   
-  def initialize options = {}
+  def initialize(options = {})
     @private_key = options[:private_key]
     @public_key = options[:public_key]
   end
@@ -50,7 +50,7 @@ class Mollom
   #                                  :author_url => 'http://www.openminds.be'
   #  response.spam? # => false
   #  response.ham?  # => true
-  def check_content content = {}
+  def check_content(content = {})
     return ContentResponse.new(send_command('mollom.checkContent', content))
   end
 
@@ -60,7 +60,7 @@ class Mollom
   #  captcha = mollom.image_captcha :author_ip => '172.16.0.1'
   #  captcha['url']        # => http://xmlrpc1.mollom.com:80/a9616e6b4cd6a81ecdd509fa624d895d.png
   #  captcha['session_id'] # => a9616e6b4cd6a81ecdd509fa624d895d
-  def image_captcha info = {}
+  def image_captcha(info = {})
     return send_command('mollom.getImageCaptcha', info)
   end
 
@@ -70,7 +70,7 @@ class Mollom
   #  captcha = mollom.audio_captcha :author_ip => '172.16.0.2', :session_id => 'a9616e6b4cd6a81ecdd509fa624d895d'
   #  captcha['url']        # => http://xmlrpc1.mollom.com:80/a9616e6b4cd6a81ecdd509fa624d895d.mp3
   #  captcha['session_id'] # => a9616e6b4cd6a81ecdd509fa624d895d
-  def audio_captcha info = {}
+  def audio_captcha(info = {})
     return send_command('mollom.getAudioCaptcha', info)
   end
 
@@ -81,7 +81,7 @@ class Mollom
   #  # show to user... input from user
   #  return = mollom.valid_captcha? :session_id => captcha['session_id'], :solution => 'abcDe9'
   #  return # => true
-  def valid_captcha? info = {}
+  def valid_captcha?(info = {})
     return send_command('mollom.checkCaptcha', info)
   end
 
@@ -104,7 +104,7 @@ class Mollom
   #  today_rejected
   #
   #  mollom.statistics :type => 'total_accepted' # => 123
-  def statistics options = {}
+  def statistics(options = {})
     return send_command('mollom.getStatistics', options)
   end
 
@@ -117,7 +117,7 @@ class Mollom
   #  unwanted
   #
   #  mollom.send_feedback :session_id => 'a9616e6b4cd6a81ecdd509fa624d895d', :feedback => 'unwanted'
-  def send_feedback feedback = {}
+  def send_feedback(feedback = {})
     return send_command('mollom.sendFeedback', feedback)
   end
 
@@ -127,7 +127,7 @@ class Mollom
   #
   #  mollom.server_list
   #  # => [{:proto=>"http", :host=>"88.151.243.81"}, {:proto=>"http", :host=>"82.103.131.136"}]
-  def server_list refresh = false
+  def server_list(refresh = false)
     return @server_list if @server_list && refresh
     STATIC_SERVER_LIST.each do |static_server|
       @server_list = get_server_list_from(static_server)
