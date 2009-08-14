@@ -148,7 +148,8 @@ class Comment < ActiveRecord::Base
     end
     
     def apply_filter
-      self.content_html = sanitize(filter.filter(content))
+      sanitized_content = Sanitize.clean(content)
+      self.content_html = filter.filter(sanitized_content)
     end
     
     def canonicalize_url
