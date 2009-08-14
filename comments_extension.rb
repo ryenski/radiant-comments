@@ -22,12 +22,11 @@ class CommentsExtension < Radiant::Extension
   end
 
   def activate
-    Comment
-    SpamFilter
-    SimpleSpamFilter
-    AkismetSpamFilter
-    MollomSpamFilter
-    
+    require 'comment'
+    Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
+      require file
+    end
+
     Page.class_eval do
       include CommentPageExtensions
       include CommentTags

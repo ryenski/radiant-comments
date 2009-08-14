@@ -9,6 +9,11 @@ describe MollomSpamFilter do
     MollomSpamFilter.instance.instance_variable_set(:@mollom, nil)
   end
   
+  it "should always allow comments to save" do
+    @comment = comments(:first)
+    MollomSpamFilter.valid?(@comment).should be_true
+  end
+  
   it "should be configured if the public and private key are set" do
     Radiant::Config['comments.mollom_publickey'] = 'foo'
     Radiant::Config['comments.mollom_privatekey'] = 'bar'

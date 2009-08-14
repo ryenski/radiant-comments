@@ -7,8 +7,7 @@ class AkismetSpamFilter < SpamFilter
   def approved?(comment)
     (akismet.valid? && ham?(comment)) || raise(SpamFilter::Spam)
   rescue
-    # Spam and anything raised by Net::HTTP, e.g. Errno stuff
-    comment.errors.add_to_base("Failed spam check.")
+    # Spam and anything raised by Net::HTTP, e.g. Errno, Timeout stuff
     false
   end
 

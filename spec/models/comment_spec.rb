@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Comment do
+describe "Comment" do
   dataset :comments
 
   before do

@@ -3,11 +3,10 @@ class MollomSpamFilter < SpamFilter
     !Radiant::Config['comments.mollom_privatekey'].blank? &&
     !Radiant::Config['comments.mollom_publickey'].blank?
   end
-  
+
   def approved?(comment)
     (mollom.key_ok? && ham?(comment)) || raise(SpamFilter::Spam)
   rescue Mollom::Error, SpamFilter::Spam
-    comment.errors.add_to_base("Failed spam check.")
     false
   end
 
@@ -20,7 +19,7 @@ class MollomSpamFilter < SpamFilter
       raise Comment::AntispamWarning.new(e.to_s)
     end
   end
-  
+
   def mollom
     @mollom ||= Mollom.new(:private_key => Radiant::Config['comments.mollom_privatekey'], :public_key => Radiant::Config['comments.mollom_publickey']).tap do |m|
       unless Rails.cache.read('MOLLOM_SERVER_CACHE').blank?
@@ -28,7 +27,7 @@ class MollomSpamFilter < SpamFilter
       end
     end
   end
-  
+
   private
   def ham?(comment)
     response = mollom.check_content(
@@ -41,7 +40,7 @@ class MollomSpamFilter < SpamFilter
     save_mollom_servers
     response.ham?
   end
-  
+
   def save_mollom_servers
     Rails.cache.write('MOLLOM_SERVER_CACHE', mollom.server_list.to_yaml) if mollom.key_ok?
   rescue Mollom::Error #TODO: something with this error...

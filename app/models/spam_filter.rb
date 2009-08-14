@@ -16,5 +16,11 @@ class SpamFilter
     false
   end
   
+  # By default, let comments save to the database.  Then they can be approved
+  # manually or auto-approved by the filter.
+  def valid?(comment)
+    true
+  end
+  
   class Spam < ::StandardError; end
 end
