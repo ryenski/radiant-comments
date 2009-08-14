@@ -128,7 +128,7 @@ class Mollom
   #  mollom.server_list
   #  # => [{:proto=>"http", :host=>"88.151.243.81"}, {:proto=>"http", :host=>"82.103.131.136"}]
   def server_list(refresh = false)
-    return @server_list if @server_list && refresh
+    return @server_list if @server_list && !refresh
     STATIC_SERVER_LIST.each do |static_server|
       @server_list = get_server_list_from(static_server)
       return @server_list if @server_list
