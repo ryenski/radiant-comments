@@ -23,7 +23,11 @@ class CommentsExtension < Radiant::Extension
 
   def activate
     Comment
-
+    SpamFilter
+    SimpleSpamFilter
+    AkismetSpamFilter
+    MollomSpamFilter
+    
     Page.class_eval do
       include CommentPageExtensions
       include CommentTags
