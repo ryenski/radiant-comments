@@ -179,7 +179,7 @@ module CommentTags
   tag "comments:form" do |tag|
     attrs = tag.attr.symbolize_keys
     html_class, html_id = attrs[:class], attrs[:id]
-    r = %Q{ <form action="#{tag.locals.page.url}comments}
+    r = %Q{ <form action="#{tag.locals.page.url}#{'comments' unless Radiant::Config['comments.post_to_page?']}}
       r << %Q{##{html_id}} unless html_id.blank?
     r << %{" method="post" } #comlpete the quotes for the action
       r << %{ id="#{html_id}" } unless html_id.blank?

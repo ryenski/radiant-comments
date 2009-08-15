@@ -38,5 +38,18 @@ describe Page do
       pages(:home).should render(tag).as(expected)
     end
   end
-
+  describe "<r:comments:form>" do
+    before :each do
+      @page = pages(:first)
+    end
+    it "should postback to the comments controller by default" do
+      Radiant::Config['comments.post_to_page?'] = false
+      @page.should render('<r:comments:form></r:comments:form>').matching(%r[#{@page.url}comments])
+    end
+    
+    it "should postback to the page when comments.post_to_page? is set to true" do
+      Radiant::Config['comments.post_to_page?'] = true
+      @page.should render('<r:comments:form></r:comments:form>').matching(%r[#{@page.url}"])
+    end
+  end
 end

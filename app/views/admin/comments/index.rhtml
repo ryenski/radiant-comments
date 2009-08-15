@@ -27,11 +27,13 @@
 
 <%= will_paginate @comments %>
 
-<% if Comment.new.akismet.valid? %>
+<% if Comment.spam_filter == AkismetSpamFilter %>
   <small class="notice">Protected by <a href="http://akismet.com/">Akismet</a></small>
-<% elsif Comment.new.mollom.key_ok? %>
+<% elsif Comment.spam_filter == MollomSpamFilter %>
   <small class="notice">Protected by <a href="http://mollom.com">Mollom</a></small>
-<% elsif current_user.developer? %>
+<% elsif Comment.spam_filter == SimpleSpamFilter && SimpleSpamFilter.required? %>
+  <small class="notice">Comments are protected from spam by a simple challenge/response field.  For more robust spam filtering, try <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a>.</small>
+<% elsif current_user.developer? || current_user.admin? %>
   <small class="note">You have 3 built-in options for spam protection although currently comments are not automatically protected. Install <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a> to protect against comment spam through an external service, or use the &lt;r:comments:spam_answer_tag /&gt;. Instructions may be found in the README.</small>
 <% end %>
 
