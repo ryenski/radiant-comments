@@ -47,8 +47,12 @@ class CommentsController < ApplicationController
     
     def clear_single_page_cache(comment)
       if comment && comment.page
-        Radiant::Cache::EntityStore.new.purge(comment.page.url)
-        Radiant::Cache::MetaStore.new.purge(comment.page.url)
+        begin
+          Radiant::Cache::EntityStore.new.purge(comment.page.url)
+          Radiant::Cache::MetaStore.new.purge(comment.page.url)
+        rescue NameError
+          ResponseCache.instance.clear
+        end
       end
     end
   
