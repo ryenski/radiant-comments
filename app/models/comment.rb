@@ -1,7 +1,5 @@
 require 'digest/md5'
 class Comment < ActiveRecord::Base
-  include ActionView::Helpers::SanitizeHelper
-  extend ActionView::Helpers::SanitizeHelper::ClassMethods
   belongs_to :page, :counter_cache => true
 
   validate :check_for_spam
@@ -21,8 +19,11 @@ class Comment < ActiveRecord::Base
 
   def self.spam_filter
     @spam_filter ||= begin
-      f = %w{mollom akismet simple}.find {|type| SpamFilter[type].try(:configured?) }
-      SpamFilter[f]
+      filters = SpamFilter.descendants.map(&:to_s)
+      simple = filters.delete('SimpleSpamFilter')
+      filters << simple
+      f = filters.find {|filter| filter.constantize.try(:configured?)}
+      f.constantize
     end
   end
 
@@ -66,7 +67,7 @@ class Comment < ActiveRecord::Base
   end
 
   def check_for_spam
-    spam_filter.valid?(self)
+    spam_filter && spam_filter.valid?(self)
   end
 
   private
@@ -79,7 +80,8 @@ class Comment < ActiveRecord::Base
     end
 
     def apply_filter
-      sanitized_content = Sanitize.clean(content)
+      cleaner_type = defined?(COMMENT_SANITIZE_OPTION) ? COMMENT_SANITIZE_OPTION : Sanitize::Config::RELAXED
+      sanitized_content = Sanitize.clean(content, cleaner_type)
       self.content_html = filter.filter(sanitized_content)
     end
 
