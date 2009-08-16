@@ -30,6 +30,7 @@ See the included HELP docs here or read them in your Radiant interface with the 
 
 == Contributors
 
+* John Muhl
 * Sven Schwyn
 * Gerrit Kaiser
 * Stephen Lombardo
