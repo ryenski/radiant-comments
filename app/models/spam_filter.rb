@@ -1,8 +1,5 @@
 class SpamFilter
   include Simpleton
-  def self.[](key)
-    self.descendants.find {|klass| klass.name =~ /^#{key.camelize}/ }
-  end
   
   def approved?(comment)
     raise NotImplementedError, "spam filter subclasses should implement this method"
