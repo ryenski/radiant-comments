@@ -1,7 +1,7 @@
 require_dependency 'application_controller'
 
 class CommentsExtension < Radiant::Extension
-  version "0.0.6"
+  version "0.1"
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
 
@@ -22,6 +22,7 @@ class CommentsExtension < Radiant::Extension
   end
 
   def activate
+    require 'sanitize'
     require 'comment'
     Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
       require file
