@@ -1,21 +1,7 @@
 class Admin::CommentsController < ApplicationController
 
   def index
-    conditions = case params[:status]
-    when "approved"
-      "comments.approved_at IS NOT NULL"
-    when "unapproved"
-      "comments.approved_at IS NULL"
-    else
-      nil
-    end
-    @page = Page.find(params[:page_id]) if params[:page_id]
-    @comments = if @page.nil? 
-      Comment.paginate(:page => params[:page], :order => "created_at DESC", :conditions => conditions)
-    else
-      @page.comments.paginate(:page => params[:page], :conditions => conditions)
-    end
-
+    @comments = load_comments
     respond_to do |format|
       format.html
       format.csv  { render :text => @comments.to_csv }
@@ -33,7 +19,7 @@ class Admin::CommentsController < ApplicationController
   end
   
   def destroy_unapproved
-    if Comment.destroy_all('approved_at is NULL')
+    if Comment.unapproved.destroy_all
       flash[:notice] = "You have removed all unapproved comments."
     else
       flash[:notice] = "I was unable to remove all unapproved comments."
@@ -68,7 +54,7 @@ class Admin::CommentsController < ApplicationController
 
   def enable
     @page = Page.find(params[:page_id])
-    @page.enable_comments = 1
+    @page.enable_comments = true
     @page.save!
     flash[:notice] = "Comments have been enabled for #{@page.title}"
     redirect_to admin_pages_url
@@ -100,6 +86,26 @@ class Admin::CommentsController < ApplicationController
 
 
   protected
+
+  def load_comments
+    status_scope.paginate(:page => params[:page])
+  end
+  
+  def status_scope
+    case params[:status]
+    when 'approved'
+      base_scope.approved
+    when 'unapproved'
+      base_scope.unapproved
+    else
+      base_scope
+    end
+  end
+  
+  def base_scope
+    @page = Page.find(params[:page_id]) if params[:page_id]
+    @page ? @page.comments : Comment.recent
+  end
 
   def announce_comment_removed
     flash[:notice] = "The comment was successfully removed from the site."

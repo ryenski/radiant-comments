@@ -2,6 +2,10 @@ require 'digest/md5'
 class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
 
+  named_scope :unapproved, :conditions => {:approved_at => nil}
+  named_scope :approved, :conditions => 'approved_at IS NOT NULL'
+  named_scope :recent, :order => 'created_at DESC'
+
   validate :check_for_spam
   validates_presence_of :author, :author_email, :content
 

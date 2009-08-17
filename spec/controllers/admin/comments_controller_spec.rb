@@ -37,7 +37,8 @@ describe Admin::CommentsController do
       Comment.count.should > 0
     end
     it "should destroy all of the unapproved comments" do
-      Comment.should_receive(:destroy_all).with('approved_at is NULL').and_return(true)
+      Comment.should_receive(:unapproved).and_return(Comment)
+      Comment.should_receive(:destroy_all).and_return(true)
       delete :destroy_unapproved
     end
     it "should leave no unapproved comments in the database" do
