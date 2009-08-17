@@ -113,7 +113,7 @@ class Comment < ActiveRecord::Base
     include ActionView::Helpers::TagHelper
 
     def filter(content)
-      simple_format(h(content))
+      simple_format(escape_once(content))
     end
   end
 
