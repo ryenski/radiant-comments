@@ -18,13 +18,7 @@ class Comment < ActiveRecord::Base
   end
 
   def self.spam_filter
-    @spam_filter ||= begin
-      filters = SpamFilter.descendants.map(&:to_s)
-      simple = filters.delete('SimpleSpamFilter')
-      filters << simple
-      f = filters.find {|filter| filter.constantize.try(:configured?)}
-      f.constantize
-    end
+    @spam_filter ||= SpamFilter.select
   end
 
   def self.simple_spam_filter_enabled?

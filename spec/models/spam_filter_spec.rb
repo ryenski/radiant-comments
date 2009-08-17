@@ -18,4 +18,21 @@ describe SpamFilter do
   it "should not be configured by default" do
     SpamFilter.should_not be_configured
   end
+  
+  describe "selecting an appropriate subclass" do
+    it "should select the Simple filter if no other filters are configured" do
+      SpamFilter.descendants.without(SimpleSpamFilter).each do |f|
+        f.stub!(:configured?).and_return(false)
+      end
+      SpamFilter.select.should == SimpleSpamFilter
+    end
+    
+    it "should select the first properly configured filter" do
+      MollomSpamFilter.stub!(:configured?).and_return(true)
+      SpamFilter.descendants.without(MollomSpamFilter).each do |f|
+        f.stub!(:configured?).and_return(false)
+      end
+      SpamFilter.select.should == MollomSpamFilter
+    end
+  end
 end
