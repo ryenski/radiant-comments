@@ -1,0 +1,31 @@
+#comment-nav {
+  float: right;
+  list-style: none;
+  margin: -42px 0 0 96px;
+  padding: 0; }
+  #comment-nav li {
+    display: inline;
+    margin: 0 5px 0 0; }
+  #comment-nav a, #comment-nav span {
+    padding: 5px 5px 5px 25px;
+    background-position: 5px center;
+    background-repeat: no-repeat; }
+  #comment-nav a, #comment-nav a:visited {
+    color: black; }
+  #comment-nav span {
+    border: 1px solid #ffa;
+    background-color: #ffd; }
+  #comment-nav li.all a, #comment-nav li.all span {
+    background-image: url(/images/admin/comments.png); }
+  #comment-nav li.approved a, #comment-nav li.approved span {
+    background-image: url(/images/admin/accept.png); }
+  #comment-nav li.unapproved a, #comment-nav li.unapproved span {
+    background-image: url(/images/admin/error.png); }
+  #comment-nav li.csv a, #comment-nav li.csv span {
+    background-image: url(/images/admin/table_save.png); }
+
+html>body li.all a, html>body li.all span, html>body li.approved a, html>body li.approved span, html>body li.unapproved a, html>body li.unapproved span, html>body li.csv a, html>body li.csv span {
+  *display: inline-block; }
+
+* html li.all a, * html li.all span, * html li.approved a, * html li.approved span, * html li.unapproved a, * html li.unapproved span, * html li.csv a, * html li.csv span {
+  display: inline-block; }
