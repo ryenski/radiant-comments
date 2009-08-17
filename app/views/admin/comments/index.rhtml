@@ -1,25 +1,22 @@
+<% include_stylesheet 'admin/comments' %>
 <h1>
-  <% if @page.nil? %>
-    <%= "#{params[:status].titleize if params[:status]} Comments | 
-        #{link_to('Download CSV', {:format => 'csv', :status => params[:status]})}" %>
-  <% else %>
-    <%= "#{@page.comments_count} #{pluralize(@page.comments_count, "Comment")} on 
-         #{link_to(@page.title, page_edit_url(@page.id))}| 
-         #{link_to('Download CSV', {:format => 'csv', :status => params[:status], :page_id => @page.id})}
-         " %>
-  <% end %>  
+  <% if @page -%>
+    <%= @page.comments.count %> <%= pluralize(@page.comments.count, 'Comment') %> on <%= link_to @page.title, edit_admin_page_path(@page) %>
+  <% else -%>
+    <%= params[:status].titleize if params[:status] %> Comments
+  <% end -%>
 </h1>
 
-<p class="comment-nav">
-  View: 
-  <%= content_tag :span, link_to_unless_current("All Comments", :status => "all", :page_id => params[:page_id]) %> 
-  <%= content_tag :span, link_to_unless_current("Approved Comments", :status => "approved", :page_id => params[:page_id]) %> 
-  <%= content_tag :span, link_to_unless_current("Unapproved Comments", :status => "unapproved", :page_id => params[:page_id]) %>
-</p>
+<ul id="comment-nav">
+  <li class="all"><%= link_or_span_unless_current("All Comments", :status => 'all', :page_id => params[:page_id]) %></li>
+  <li class="approved"><%= link_or_span_unless_current("Approved Comments", :status => "approved", :page_id => params[:page_id]) %></li>
+  <li class="unapproved"><%= link_or_span_unless_current("Unapproved Comments", :status => "unapproved", :page_id => params[:page_id]) %></li>
+  <li class="csv"><%= link_to "Download CSV", :format => :csv %></li>
+</ul>
 
 <table id="comments" class="index" border="0" cellspacing="0" cellpadding="0">
   <tbody>
-    <%= render :partial => "comment", :collection => (@comments) %>
+    <%= render :partial => "comment", :collection => @comments %>
   </tbody>
 </table>
 
@@ -36,9 +33,3 @@
 <% elsif current_user.developer? || current_user.admin? %>
   <small class="note">You have 3 built-in options for spam protection although currently comments are not automatically protected. Install <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a> to protect against comment spam through an external service, or use the &lt;r:comments:spam_answer_tag /&gt;. Instructions may be found in the README.</small>
 <% end %>
-
-<script type="text/javascript">
-// <![CDATA[
-  new RuledTable('comments');
-// ]]>
-</script>

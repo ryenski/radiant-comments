@@ -4,7 +4,7 @@ class Admin::CommentsController < ApplicationController
     @comments = load_comments
     respond_to do |format|
       format.html
-      format.csv  { render :text => @comments.to_csv }
+      format.csv { send_data @comments.to_csv, :filename => "#{File.basename(request.request_uri)}", :type => 'text/csv' }
     end
   end
 

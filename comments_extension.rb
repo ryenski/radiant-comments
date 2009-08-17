@@ -5,7 +5,8 @@ class CommentsExtension < Radiant::Extension
 
   define_routes do |map|
     map.namespace :admin do |admin|
-      admin.connect 'comments/:status', :controller => 'comments', :status => /all|approved|unapproved/, :conditions => { :method => :get }
+      admin.connect 'comments/:status', :controller => 'comments', :status => 'unapproved', :conditions => { :method => :get }, :requirements => { :status => /all|unapproved|approved/ }
+      admin.connect 'comments/:status.:format', :controller => 'comments', :status => /all|approved|unapproved/, :conditions => { :method => :get }
       admin.resources :comments, :member => { :remove => :get, :approve => :put, :unapprove => :put }, :collection => {:destroy_unapproved => :delete}
       admin.page_enable_comments '/pages/:page_id/comments/enable', :controller => 'comments', :action => 'enable', :conditions => {:method => :put}
     end
@@ -37,7 +38,7 @@ class CommentsExtension < Radiant::Extension
       admin.page.index.add :node, "index_view_comments"
     end
 
-    admin.tabs.add "Comments", "/admin/comments/unapproved", :visibility => [:all]
+    admin.tabs.add "Comments", "/admin/comments", :visibility => [:all]
     require "fastercsv"
 
     ActiveRecord::Base.class_eval do
