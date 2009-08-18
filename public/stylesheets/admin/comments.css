@@ -29,3 +29,13 @@ html>body li.all a, html>body li.all span, html>body li.approved a, html>body li
 
 * html li.all a, * html li.all span, * html li.approved a, * html li.approved span, * html li.unapproved a, * html li.unapproved span, * html li.csv a, * html li.csv span {
   display: inline-block; }
+
+#content tr.comment td.content { color: #333; padding-right: 8px; width: 45%; font-size: 75%; }
+#content tr.comment blockquote.short { display: inline; margin: 0 }
+#content tr.comment blockquote.expanded { display:block; margin: 0; padding: 4px; border: 1px solid #bbc; background-color: #eef; }
+#content tr.comment td.controls, #content tr.comment td.date { white-space: nowrap }
+#content tr.comment.approved { background-color: #efe; }
+#content tr.comment a { color: black; }
+#content tr.comment a:visited { color: black; }
+
+button.delete-unapproved { padding: 5px; font-size: 120%; }

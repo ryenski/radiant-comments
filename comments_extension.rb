@@ -22,7 +22,7 @@ class CommentsExtension < Radiant::Extension
 
   def activate
     require 'sanitize'
-    require 'comment'
+    
     Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
       require file
     end

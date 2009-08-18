@@ -1,3 +1,16 @@
+<% content_for :page_scripts do -%>
+  document.observe('dom:loaded', function(){
+    when($$('tr.comment blockquote.expanded'), function(bqs){
+      bqs.each(function(bq){
+        var td = bq.up();
+        td.observe('click', function(e){
+          e.stop();
+          td.select('blockquote').invoke('toggle');
+        });
+      });
+    });
+  });
+<% end %>
 <% include_stylesheet 'admin/comments' %>
 <h1>
   <% if @page -%>
@@ -14,15 +27,28 @@
   <li class="csv"><%= link_to "Download CSV", :format => :csv %></li>
 </ul>
 
+<%= will_paginate @comments %>
+
 <table id="comments" class="index" border="0" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th>Content</th>
+      <th>Date</th>
+      <th>Author</th>
+      <% unless @page %><th>Page</th><% end %>
+      <th>Actions</th>
+    </tr>
+  </thead>
   <tbody>
-    <%= render :partial => "comment", :collection => @comments %>
+    <%= render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>] %>
   </tbody>
 </table>
 
-<p><%= link_to "Delete All Unapproved", destroy_unapproved_admin_comments_url, :method => :delete %></p>
-
 <%= will_paginate @comments %>
+
+<% form_tag destroy_unapproved_admin_comments_url, :method => :delete do %>
+<p><button type="submit" class="delete-unapproved"><%= image_tag("admin/comments_delete.png") %> Delete All Unapproved</button></p>
+<% end %>
 
 <p><% if Comment.spam_filter == AkismetSpamFilter %>
   <small class="notice">Protected by <a href="http://akismet.com/">Akismet</a></small>
