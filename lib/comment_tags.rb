@@ -291,7 +291,7 @@ module CommentTags
     }
   tag "recent_comments:each" do |tag|
     limit = tag.attr['limit'] || 10
-    comments = Comment.find(:all, :conditions => "comments.approved_at IS NOT NULL", :order => "created_at DESC", :limit => limit)
+    comments = Comment.approved.recent.all(:limit => limit)
     result = []
     comments.each_with_index do |comment, index|
       tag.locals.comment = comment

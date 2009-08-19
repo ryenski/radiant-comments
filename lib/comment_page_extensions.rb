@@ -21,17 +21,19 @@ module CommentPageExtensions
         comment = self.comments.build(request.parameters[:comment])
         comment.request = self.request = request
         comment.save!
-        
-        # Purge the cache
-        Radiant::Cache.clear
+
         if Radiant::Config['comments.notification'] == "true"
           if comment.approved? || Radiant::Config['comments.notify_unapproved'] == "true"
             CommentMailer.deliver_comment_notification(comment)
           end
         end
-        absolute_url = "#{request.protocol}#{request.host_with_port}#{relative_url_for(url, request)}#comment-#{comment.id}"
-        response.redirect(absolute_url, 303)
-        return
+        if comment.approved?
+          absolute_url = "#{request.protocol}#{request.host_with_port}#{relative_url_for(url, request)}#comment-#{comment.id}"
+          response.redirect(absolute_url, 303)
+          return
+        else
+          self.selected_comment = comment
+        end
       rescue ActiveRecord::RecordInvalid
         self.last_comment = comment
       end

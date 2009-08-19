@@ -114,8 +114,7 @@ class Admin::CommentsController < ApplicationController
   def clear_single_page_cache(comment)
     if comment && comment.page
       unless defined?(ResponseCache)
-        Radiant::Cache::EntityStore.new.purge(comment.page.url)
-        Radiant::Cache::MetaStore.new.purge(comment.page.url)
+        Radiant::Cache.clear
       else
         ResponseCache.instance.clear
       end
