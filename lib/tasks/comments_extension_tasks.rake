@@ -61,8 +61,8 @@ COMMENT_SANITIZER_OPTION =
   #  :protocols => {'a' => {'href' => ['http', 'https', 'mailto']}}}
 FILE
         end
+        puts "Comment sanitization settings may be found in config/initializers/sanitizer.rb"
       end
-      puts "Comment sanitization settings may be found in config/initializers/sanitizer.rb"
     end
   end
 end
