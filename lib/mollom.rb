@@ -153,7 +153,7 @@ class Mollom
         proto, ip = server.split('://')
         {:proto => proto, :host => ip}
     end
-  rescue
+  rescue StandardError, Exception
     nil
   end
   
@@ -233,10 +233,10 @@ class Mollom
     # Returns 'unknown', 'ham', 'unsure' or 'spam', depending on what the content is.
     def to_s
       case @spam_response
-      when Unknown: 'unknown'
-      when Ham: 'ham'
-      when Unsure: 'unsure'
-      when Spam: 'spam'
+      when Unknown 	then 'unknown'
+      when Ham 		then 'ham'
+      when Unsure 	then 'unsure'
+      when Spam 	then 'spam'
       end
     end
   end
