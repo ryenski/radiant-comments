@@ -15,9 +15,16 @@ namespace :radiant do
         end
       end
       
-      desc "Copies the public files to your public directory"
+      desc "Copies public assets of the CommentsExtension to the instance public/ directory."
       task :update => :environment do
-        FileUtils.cp CommentsExtension.root + "/public/images/admin/accept.png", RAILS_ROOT + "/public/images/admin"
+        is_svn_or_dir = proc {|path| path =~ /\.svn/ || File.directory?(path) }
+        puts "Copying assets from CommentsExtension"
+        Dir[CommentsExtension.root + "/public/**/*"].reject(&is_svn_or_dir).each do |file|
+          path = file.sub(CommentsExtension.root, '')
+          directory = File.dirname(path)
+          mkdir_p RAILS_ROOT + directory, :verbose => false
+          cp file, RAILS_ROOT + path, :verbose => false
+        end
       end
       
       desc "Generates the initializer for comment sanitizing"
@@ -31,6 +38,7 @@ namespace :radiant do
       desc "Regenerates the initializer for comment sanitizing if it does not yet exist"
       task :forced_initialize do
         sanitizer_path = File.join(Rails.root, 'config', 'initializers', 'sanitizer.rb')
+        mkdir_p File.dirname(sanitizer_path), :verbose => false
         File.open(sanitizer_path,'w+') do |file|
           file.write string = <<FILE
 # The Comments Extension uses this option to clean out unwanted elements from the comments.
