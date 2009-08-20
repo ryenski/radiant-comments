@@ -17,7 +17,7 @@ class Admin::CommentsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
   end
-  
+
   def destroy_unapproved
     if Comment.unapproved.destroy_all
       flash[:notice] = "You have removed all unapproved comments."
@@ -32,7 +32,7 @@ class Admin::CommentsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
   end
-  
+
   def show
     redirect_to edit_admin_comment_path(params[:id])
   end
@@ -40,8 +40,8 @@ class Admin::CommentsController < ApplicationController
   def update
     @comment = Comment.find(params[:id])
     begin
-      TextFilter.descendants.each do |filter| 
-        @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id    
+      TextFilter.descendants.each do |filter|
+        @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id
       end
       @comment.update_attributes(params[:comment])
       Radiant::Cache.clear
@@ -56,6 +56,7 @@ class Admin::CommentsController < ApplicationController
     @page = Page.find(params[:page_id])
     @page.enable_comments = true
     @page.save!
+    clear_cache
     flash[:notice] = "Comments have been enabled for #{@page.title}"
     redirect_to admin_pages_url
   end
@@ -90,7 +91,7 @@ class Admin::CommentsController < ApplicationController
   def load_comments
     status_scope.paginate(:page => params[:page])
   end
-  
+
   def status_scope
     case params[:status]
     when 'approved'
@@ -101,7 +102,7 @@ class Admin::CommentsController < ApplicationController
       base_scope
     end
   end
-  
+
   def base_scope
     @page = Page.find(params[:page_id]) if params[:page_id]
     @page ? @page.comments : Comment.recent
@@ -110,14 +111,18 @@ class Admin::CommentsController < ApplicationController
   def announce_comment_removed
     flash[:notice] = "The comment was successfully removed from the site."
   end
-  
+
+  def clear_cache
+    if defined?(ResponseCache)
+      ResponseCache.instance.clear
+    else
+      Radiant::Cache.clear
+    end
+  end
+
   def clear_single_page_cache(comment)
     if comment && comment.page
-      unless defined?(ResponseCache)
-        Radiant::Cache.clear
-      else
-        ResponseCache.instance.clear
-      end
+      clear_cache
     end
   end
 
