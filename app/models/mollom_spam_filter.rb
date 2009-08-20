@@ -1,4 +1,8 @@
 class MollomSpamFilter < SpamFilter
+  def message
+    'Protected by <a href="http://mollom.com">Mollom</a>'
+  end
+  
   def configured?
     !Radiant::Config['comments.mollom_privatekey'].blank? &&
     !Radiant::Config['comments.mollom_publickey'].blank?

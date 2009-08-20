@@ -16,7 +16,7 @@
   <% unless @page %>
     <td class="page">
       on
-      <%= link_to comment.page.title, comment.page.url, :class => 'view-page' %>
+      <%= link_to truncate(comment.page.title, :length => 40), comment.page.url, :class => 'view-page' %>
       <%= link_to image_tag("admin/page_white_edit.png"),
                     edit_admin_page_path(comment.page), :title => "Edit page" %>
     </td>

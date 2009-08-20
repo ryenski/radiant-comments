@@ -11,6 +11,10 @@ end
 class SpamFilter
   include Simpleton
   
+  def message
+    raise NotImplementedError, 'spam filter subclasses should implement this method'
+  end
+  
   def select
     # Make sure Simple filter comes last, as a fallback
     filters = SpamFilter.descendants.without(SimpleSpamFilter) << SimpleSpamFilter

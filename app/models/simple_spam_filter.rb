@@ -1,5 +1,13 @@
 # A simple challenge-response spam filter
 class SimpleSpamFilter < SpamFilter
+  def message
+    if required?
+      'Comments are protected from spam by a simple challenge/response field.  For more robust spam filtering, try <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a>.'
+    else
+      'You have 3 built-in options for spam protection although currently comments are not automatically protected. Install <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a> to protect against comment spam through an external service, or use the &lt;r:comments:spam_answer_tag /&gt;. Instructions may be found in the README.'
+    end
+  end
+  
   def configured?
     true
   end
