@@ -43,12 +43,13 @@ class Admin::CommentsController < ApplicationController
       TextFilter.descendants.each do |filter|
         @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id
       end
-      @comment.update_attributes(params[:comment])
-      Radiant::Cache.clear
+      @comment.update_attributes!(params[:comment])
+      clear_cache
       flash[:notice] = "Comment Saved"
       redirect_to :action => :index
     rescue Exception => e
-      flash[:notice] = "There was an error saving the comment"
+      flash[:notice] = "There was an error saving the comment: #{e.message}"
+      render :action => :edit
     end
   end
 
