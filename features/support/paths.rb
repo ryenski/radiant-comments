@@ -6,8 +6,10 @@ def path_to(page_name)
   
   when /login/i
     login_path
+    
+  when /comments/i
+    admin_comments_path
   # Add more page name => path mappings here
-  
   else
     raise "Can't find mapping from \"#{page_name}\" to a path."
   end
