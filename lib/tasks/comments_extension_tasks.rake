@@ -24,12 +24,13 @@ namespace :radiant do
       task :initialize do
         sanitizer_path = File.join(Rails.root, 'config', 'initializers', 'sanitizer.rb')
         if !File.exist?(sanitizer_path)
-          do_task :forced_initialize
+          Rake::Task["radiant:extensions:comments:forced_initialize"].execute
         end
       end
       
       desc "Regenerates the initializer for comment sanitizing if it does not yet exist"
       task :forced_initialize do
+        Dir.mkdir('config/initializers') if !File.exist?('config/initializers')
         sanitizer_path = File.join(Rails.root, 'config', 'initializers', 'sanitizer.rb')
         File.open(sanitizer_path,'w+') do |file|
           file.write string = <<FILE
