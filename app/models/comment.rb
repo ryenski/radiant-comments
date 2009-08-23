@@ -2,6 +2,10 @@ require 'digest/md5'
 class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
 
+  named_scope :unapproved, :conditions => {:approved_at => nil}
+  named_scope :approved, :conditions => 'approved_at IS NOT NULL'
+  named_scope :recent, :order => 'created_at DESC'
+
   validate :check_for_spam
   validates_presence_of :author, :author_email, :content
 
@@ -18,13 +22,7 @@ class Comment < ActiveRecord::Base
   end
 
   def self.spam_filter
-    @spam_filter ||= begin
-      filters = SpamFilter.descendants.map(&:to_s)
-      simple = filters.delete('SimpleSpamFilter')
-      filters << simple
-      f = filters.find {|filter| filter.constantize.try(:configured?)}
-      f.constantize
-    end
+    @spam_filter ||= SpamFilter.select
   end
 
   def self.simple_spam_filter_enabled?
@@ -115,7 +113,7 @@ class Comment < ActiveRecord::Base
     include ActionView::Helpers::TagHelper
 
     def filter(content)
-      simple_format(h(content))
+      simple_format(escape_once(content))
     end
   end
 

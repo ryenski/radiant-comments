@@ -37,10 +37,7 @@ describe "Comment" do
     it "should escape html for content_html when a filter is not selected" do
       @comment.content = %{<script type="text/javascript">alert('hello')</script>}
       @comment.save!  
-      # Rspec escapes the result. Although this isn't true, we test for 
-      # &amp;#39; instead of &#39;
-      pending('Look into the output from Rspec for HTML entities')
-      @comment.content_html.should == %{<p>alert(&amp;#39;hello&amp;#39;)</p>}
+      @comment.content_html.should == %{<p>alert(&#39;hello&#39;)</p>}
     end
     it "should sanitize the content" do
       @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
@@ -68,10 +65,7 @@ describe "Comment" do
 
     it "should set content_html with filter when saving" do
       @comment.save
-      # Rspec escapes the result. Although this isn't true, we test for 
-      # &amp;#39; instead of &#39;
-      pending('Look into the output from Rspec for HTML entities')
-      @comment.content_html.should eql("<p>That&amp;#39;s all I have to say about that.</p>")
+      @comment.content_html.should eql("<p>That&#39;s all I have to say about that.</p>")
     end
 
     it "should validate that author is supplied" do

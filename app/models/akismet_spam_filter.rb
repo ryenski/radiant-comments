@@ -1,4 +1,8 @@
 class AkismetSpamFilter < SpamFilter
+  def message
+    'Protected by <a href="http://akismet.com/">Akismet</a>'
+  end
+  
   def configured?
     !Radiant::Config['comments.akismet_key'].blank? &&
     !Radiant::Config['comments.akismet_url'].blank?

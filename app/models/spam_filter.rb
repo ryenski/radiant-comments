@@ -1,5 +1,25 @@
+unless Array.instance_methods.include?('without')
+  class Array
+    def without(object)
+      self.dup.tap do |new_array|
+        new_array.delete(object)
+      end
+    end
+  end
+end
+
 class SpamFilter
   include Simpleton
+  
+  def message
+    raise NotImplementedError, 'spam filter subclasses should implement this method'
+  end
+  
+  def select
+    # Make sure Simple filter comes last, as a fallback
+    filters = SpamFilter.descendants.without(SimpleSpamFilter) << SimpleSpamFilter
+    filters.find {|filter| filter.try(:configured?) }
+  end
   
   def approved?(comment)
     raise NotImplementedError, "spam filter subclasses should implement this method"

@@ -51,7 +51,7 @@ module CommentTags
     Gives access to comment-related tags
   }
   tag "comments" do |tag|
-    comments = tag.locals.page.approved_comments
+    comments = tag.locals.page.comments.approved
     tag.expand
   end
 
@@ -60,7 +60,7 @@ module CommentTags
   }
   tag "comments:each" do |tag|
     page = tag.locals.page
-    comments = page.approved_comments.to_a
+    comments = page.comments.approved.to_a
     comments << page.selected_comment if page.selected_comment && page.selected_comment.unapproved?
     result = []
     comments.each_with_index do |comment, index|
@@ -276,7 +276,7 @@ module CommentTags
 
   desc %{Prints the number of comments. }
   tag "comments:count" do |tag|
-    tag.locals.page.approved_comments.count
+    tag.locals.page.comments.approved.count
   end
   
   
@@ -291,7 +291,7 @@ module CommentTags
     }
   tag "recent_comments:each" do |tag|
     limit = tag.attr['limit'] || 10
-    comments = Comment.find(:all, :conditions => "comments.approved_at IS NOT NULL", :order => "created_at DESC", :limit => limit)
+    comments = Comment.approved.recent.all(:limit => limit)
     result = []
     comments.each_with_index do |comment, index|
       tag.locals.comment = comment

@@ -7,12 +7,22 @@ describe Admin::CommentsController do
   end
 
   describe "routing" do
+    it "should route to unapproved comments by default" do
+      params_from(:get, "/admin/comments").should == { :controller => "admin/comments", :action => "index", :status => 'unapproved' }
+    end
+    
     %w(all approved unapproved).each do |status|
       it "should route to the index action for #{status} comments" do
         params_from(:get, "/admin/comments/#{status}").should == { :controller => "admin/comments", :action => "index", :status => status }
       end
       it "should route to the index action for #{status} comments on the page" do
         params_from(:get, "/admin/pages/1/comments/#{status}").should == { :controller => "admin/comments", :action => "index", :page_id => "1", :status => status }
+      end
+      it "should route to the index action for #{status} comments with the csv format" do
+        params_from(:get, "/admin/comments/#{status}.csv").should == { :controller => "admin/comments", :action => "index", :status => status, :format => 'csv' }
+      end
+      it "should route to the index action for #{status} comments on the page with the csv format" do
+        params_from(:get, "/admin/pages/1/comments/#{status}.csv").should == { :controller => "admin/comments", :action => "index", :status => status, :page_id => "1", :format => 'csv' }
       end
     end
 

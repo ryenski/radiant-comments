@@ -1,44 +1,36 @@
-<div id="comment_form_container">
-
-  <table border="0">
-    
-    <tr>
-      <th><label for="comment_author">Comment Author Name</label></th>
-      <td><%= f.text_field :author, :class => "regular" %></td>
-    </tr>
-
-    <tr>
-      <th><label for="comment_author_url">Comment Author URL</label></th>
-      <td><%= f.text_field :author_url, :class => "regular" %></td>
-    </tr>
-
-    <tr>
-      <th><label for="comment_author_email">Comment Author Email</label></th>
-      <td><%= f.text_field :author_email, :class => "regular" %></td>
-    </tr>
-    
-    <tr>
-      <th><label for="comment">Comment</label></th>
-      <td><%= f.text_area :content, :rows => 10, :class => "regular" %></td>
-    </tr>
-    
-    <tr>
-      <th>
-        <label for="comment_filter_id">Filter</label>
-      </th>
-      <td>
-        <%= f.select :filter_id, [['<none>', '']] + TextFilter.descendants.map { |s| s.filter_name }.sort %>
-        
-        
-      </td>
-    </tr>
-    
-  </table>  
-  
-  <%= submit_tag("Save comment", :class => "button", :id => "comment_submit_button") %> 
-  
-  <%= f.hidden_field :page_id %>
-  
-
-
+<% if Comment.spam_filter == SimpleSpamFilter %>
+  <div style="display:none">
+    <%= f.hidden_field :spam_answer, :value => "hemidemisemiquaver" %>
+    <%= f.hidden_field :valid_spam_answer, :value => Digest::MD5.hexdigest("hemidemisemiquaver") %>
+  </div>
+<% end %>
+<div id="comment_form_container" class="form-area">
+  <div class="row">
+    <p>
+      <label for="comment_author">Author</label><br/>
+      <%= f.text_field :author %>
+    </p>
+    <p>
+      <label for="comment_author_url">URL</label><br/>
+      <%= f.text_field :author_url %>
+    </p>
+  </div>
+  <br style="clear: both" />
+  <p>
+    <label for="comment_author_email">Email</label><br/>
+    <%= f.text_field :author_email %>
+  </p>
+  <p>
+    <label for="comment_content">Comment</label><br />
+    <%= f.text_area :content, :rows => 10, :cols => 72, :class => "textarea"%>
+  </p>
+  <p>
+    <label for="comment_filter_id">Filter</label>
+    <%= f.select :filter_id, [['<none>', '']] + TextFilter.descendants.map { |s| s.filter_name }.sort %>
+  </p>
 </div>
+<p class="buttons">
+  <%= save_model_button(@comment) %>
+  or
+  <%= link_to "Cancel", :back %>
+</p>

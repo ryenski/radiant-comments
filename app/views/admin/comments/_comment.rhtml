@@ -1,28 +1,34 @@
-<tr class="<%= "approved" if comment.approved? %>">
-  <td>
-    <a name="comment_<%= comment.id %>"></a>
-    <cite>
-      <span class="grey">Posted</span> <%= comment.created_at.to_formatted_s(:long) %>
-      <span class="grey">by</span> <%= content_tag(:strong, link_to(comment.author, comment.author_url)) if comment.author_url %>
-      <%= " <span class=\"grey\">(#{link_to(comment.author_email, "mailto:#{comment.author_email}")})</span>" if comment.author_email %>
-      <span class="grey">on</span> <strong><%= link_to(h(comment.page.title), comment.page.url) %></strong>
-      
-      <%= content_tag(:span, "#{image_tag("/images/admin/accept.png")} approved", :class => "green") if comment.approved? %>
-      
-    </cite>
-    
-    <blockquote><%= comment.content_html %></blockquote>
+<tr id="<%= dom_id(comment) %>" class="comment<%= " approved" if comment.approved? %>">
+  <td class="content" <% if comment.content.size >= 70 -%>title="Click to toggle complete text"<% end-%>>
+    <blockquote class="short"><%= escape_once(truncate(comment.content, :length => 70)) %></blockquote>
+    <% if comment.content.size >= 70 %>
+    <blockquote class="expanded" style="display:none"><%= escape_once(comment.content) %></blockquote>
+    <% end %>
   </td>
-  <td class="controls right">
-    <div class="nowrap">
-      <%= link_to("approve", approve_admin_comment_path(comment), :method => :put) unless comment.approved? %>
-      <%= link_to("unapprove", unapprove_admin_comment_path(comment), :method => :put) if comment.approved? %>
-    </div>
-    <div>
-      <%= link_to "delete", admin_comment_path(comment), :method => :delete, :confirm => "Are you sure?" %>
-    </div>
-    <div>
-      <%= link_to "edit", edit_admin_comment_path(comment) %>
-    </div>
+  <td class="date">
+    <%= comment.created_at.strftime("%b %e, %Y at %I:%M%p") %>
+  </td>
+  <td class="author">
+    by <%= escape_once(comment.author) %>
+    <% unless comment.author_email.blank? %><%= mail_to(comment.author_email, image_tag("admin/email.png"))%><% end %>
+    <% unless comment.author_url.blank? %><%= link_to(image_tag("admin/link.png"), comment.author_url) %><% end %>
+  </td>
+  <% unless @page %>
+    <td class="page">
+      on
+      <%= link_to truncate(comment.page.title, :length => 40), comment.page.url, :class => 'view-page' %>
+      <%= link_to image_tag("admin/page_white_edit.png"),
+                    edit_admin_page_path(comment.page), :title => "Edit page" %>
+    </td>
+  <% end %>
+  <td class="controls">
+    <%= link_to(image_tag('admin/accept.png'), approve_admin_comment_path(comment),
+          :title => "Approve comment", :method => :put) unless comment.approved? %>
+    <%= link_to(image_tag('admin/error.png'), unapprove_admin_comment_path(comment),
+          :method => :put, :title => "Unapprove comment") if comment.approved? %>
+    <%= link_to image_tag("admin/delete.png"), admin_comment_path(comment),
+          :method => :delete, :confirm => "Are you sure you want to delete this comment?", :title => "Delete comment" %>
+    <%= link_to image_tag("admin/comment_edit.png"), edit_admin_comment_path(comment),
+          :title => "Edit comment" %>
   </td>
 </tr>

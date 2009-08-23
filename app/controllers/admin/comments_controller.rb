@@ -1,24 +1,10 @@
 class Admin::CommentsController < ApplicationController
 
   def index
-    conditions = case params[:status]
-    when "approved"
-      "comments.approved_at IS NOT NULL"
-    when "unapproved"
-      "comments.approved_at IS NULL"
-    else
-      nil
-    end
-    @page = Page.find(params[:page_id]) if params[:page_id]
-    @comments = if @page.nil? 
-      Comment.paginate(:page => params[:page], :order => "created_at DESC", :conditions => conditions)
-    else
-      @page.comments.paginate(:page => params[:page], :conditions => conditions)
-    end
-
+    @comments = load_comments
     respond_to do |format|
       format.html
-      format.csv  { render :text => @comments.to_csv }
+      format.csv { send_data @comments.to_csv, :filename => "#{File.basename(request.request_uri)}", :type => 'text/csv' }
     end
   end
 
@@ -31,9 +17,9 @@ class Admin::CommentsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
   end
-  
+
   def destroy_unapproved
-    if Comment.destroy_all('approved_at is NULL')
+    if Comment.unapproved.destroy_all
       flash[:notice] = "You have removed all unapproved comments."
     else
       flash[:notice] = "I was unable to remove all unapproved comments."
@@ -46,7 +32,7 @@ class Admin::CommentsController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_comments_path
   end
-  
+
   def show
     redirect_to edit_admin_comment_path(params[:id])
   end
@@ -54,22 +40,24 @@ class Admin::CommentsController < ApplicationController
   def update
     @comment = Comment.find(params[:id])
     begin
-      TextFilter.descendants.each do |filter| 
-        @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id    
+      TextFilter.descendants.each do |filter|
+        @comment.content_html = filter.filter(@comment.content) if filter.filter_name == @comment.filter_id
       end
-      @comment.update_attributes(params[:comment])
-      Radiant::Cache.clear
+      @comment.update_attributes!(params[:comment])
+      clear_cache
       flash[:notice] = "Comment Saved"
       redirect_to :action => :index
     rescue Exception => e
-      flash[:notice] = "There was an error saving the comment"
+      flash[:notice] = "There was an error saving the comment: #{e.message}"
+      render :action => :edit
     end
   end
 
   def enable
     @page = Page.find(params[:page_id])
-    @page.enable_comments = 1
+    @page.enable_comments = true
     @page.save!
+    clear_cache
     flash[:notice] = "Comments have been enabled for #{@page.title}"
     redirect_to admin_pages_url
   end
@@ -101,18 +89,41 @@ class Admin::CommentsController < ApplicationController
 
   protected
 
+  def load_comments
+    status_scope.paginate(:page => params[:page])
+  end
+
+  def status_scope
+    case params[:status]
+    when 'approved'
+      base_scope.approved
+    when 'unapproved'
+      base_scope.unapproved
+    else
+      base_scope
+    end
+  end
+
+  def base_scope
+    @page = Page.find(params[:page_id]) if params[:page_id]
+    @page ? @page.comments : Comment.recent
+  end
+
   def announce_comment_removed
     flash[:notice] = "The comment was successfully removed from the site."
   end
-  
+
+  def clear_cache
+    if defined?(ResponseCache)
+      ResponseCache.instance.clear
+    else
+      Radiant::Cache.clear
+    end
+  end
+
   def clear_single_page_cache(comment)
     if comment && comment.page
-      unless defined?(ResponseCache)
-        Radiant::Cache::EntityStore.new.purge(comment.page.url)
-        Radiant::Cache::MetaStore.new.purge(comment.page.url)
-      else
-        ResponseCache.instance.clear
-      end
+      clear_cache
     end
   end
 
