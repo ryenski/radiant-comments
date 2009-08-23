@@ -37,7 +37,6 @@ namespace :radiant do
       
       desc "Regenerates the initializer for comment sanitizing if it does not yet exist"
       task :forced_initialize do
-        Dir.mkdir('config/initializers') if !File.exist?('config/initializers')
         sanitizer_path = File.join(Rails.root, 'config', 'initializers', 'sanitizer.rb')
         mkdir_p File.dirname(sanitizer_path), :verbose => false
         File.open(sanitizer_path,'w+') do |file|
