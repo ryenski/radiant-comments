@@ -1,6 +1,6 @@
 class AddPreferenceForSimpleSpamcheck < ActiveRecord::Migration
   def self.up
-    unless Radiant::Config['comments.simple_spam_filter_required?']
+    if Radiant::Config['comments.simple_spam_filter_required?'].blank?
       Radiant::Config.create(:key => 'comments.simple_spam_filter_required?', :value => true)
     end
   end
