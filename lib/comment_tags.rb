@@ -51,7 +51,7 @@ module CommentTags
     Gives access to comment-related tags
   }
   tag "comments" do |tag|
-    comments = tag.locals.page.approved_comments
+    comments = tag.locals.page.comments.approved
     tag.expand
   end
 
@@ -60,7 +60,7 @@ module CommentTags
   }
   tag "comments:each" do |tag|
     page = tag.locals.page
-    comments = page.approved_comments.to_a
+    comments = page.comments.approved.to_a
     comments << page.selected_comment if page.selected_comment && page.selected_comment.unapproved?
     result = []
     comments.each_with_index do |comment, index|
@@ -91,7 +91,6 @@ module CommentTags
       options = tag.attr.dup
       #options.inspect
       value = tag.locals.comment.send(field)
-      return value[7..-1] if field == 'author_url' && value[0,7]=='http://'
       value
     end
   end
@@ -116,7 +115,7 @@ module CommentTags
     if tag.locals.comment.author_url.blank?
       tag.locals.comment.author
     else
-      %(<a href="http://#{tag.locals.comment.author_url}">#{tag.locals.comment.author}</a>)
+      %(<a href="#{tag.locals.comment.author_url}">#{tag.locals.comment.author}</a>)
     end
   end
 
@@ -180,7 +179,7 @@ module CommentTags
   tag "comments:form" do |tag|
     attrs = tag.attr.symbolize_keys
     html_class, html_id = attrs[:class], attrs[:id]
-    r = %Q{ <form action="#{tag.locals.page.url}comments}
+    r = %Q{ <form action="#{tag.locals.page.url}#{'comments' unless Radiant::Config['comments.post_to_page?']}}
       r << %Q{##{html_id}} unless html_id.blank?
     r << %{" method="post" } #comlpete the quotes for the action
       r << %{ id="#{html_id}" } unless html_id.blank?
@@ -277,7 +276,7 @@ module CommentTags
 
   desc %{Prints the number of comments. }
   tag "comments:count" do |tag|
-    tag.locals.page.approved_comments.count
+    tag.locals.page.comments.approved.count
   end
   
   
@@ -292,7 +291,7 @@ module CommentTags
     }
   tag "recent_comments:each" do |tag|
     limit = tag.attr['limit'] || 10
-    comments = Comment.find(:all, :conditions => "comments.approved_at IS NOT NULL", :order => "created_at DESC", :limit => limit)
+    comments = Comment.approved.recent.all(:limit => limit)
     result = []
     comments.each_with_index do |comment, index|
       tag.locals.comment = comment
@@ -321,4 +320,19 @@ module CommentTags
       r << %{ />}
       r << %{<input type="hidden" name="comment[valid_spam_answer]" value="#{md5_answer}" />}
   end
+
+  desc %{
+    Render the contained elements if using the simple spam filter.
+  }
+  tag "if_comments_simple_spam_filter_enabled" do |tag|
+    tag.expand if Comment.simple_spam_filter_enabled?
+  end
+
+  desc %{
+    Render the contained elements unless using the simple spam filter.
+  }
+  tag "unless_comments_simple_spam_filter_enabled" do |tag|
+    tag.expand unless Comment.simple_spam_filter_enabled?
+  end
+
 end

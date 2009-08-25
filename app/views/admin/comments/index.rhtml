@@ -1,42 +1,53 @@
+<% content_for :page_scripts do -%>
+  document.observe('dom:loaded', function(){
+    when($$('tr.comment blockquote.expanded'), function(bqs){
+      bqs.each(function(bq){
+        var td = bq.up();
+        td.observe('click', function(e){
+          e.stop();
+          td.select('blockquote').invoke('toggle');
+        });
+      });
+    });
+  });
+<% end %>
+<% include_stylesheet 'admin/comments' %>
 <h1>
-  <% if @page.nil? %>
-    <%= "#{params[:status].titleize if params[:status]} Comments | 
-        #{link_to('Download CSV', {:format => 'csv', :status => params[:status]})}" %>
-  <% else %>
-    <%= "#{@page.comments_count} #{pluralize(@page.comments_count, "Comment")} on 
-         #{link_to(@page.title, page_edit_url(@page.id))}| 
-         #{link_to('Download CSV', {:format => 'csv', :status => params[:status], :page_id => @page.id})}
-         " %>
-  <% end %>  
+  <% if @page -%>
+    <%= @page.comments.count %> <%= "#{params[:status].titleize} " if params[:status] %><%= pluralize(@page.comments.count, 'Comment') %> on <%= link_to @page.title, edit_admin_page_path(@page) %>
+  <% else -%>
+    <%= params[:status].titleize if params[:status] %> Comments
+  <% end -%>
 </h1>
 
-<p class="comment-nav">
-  View: 
-  <%= content_tag :span, link_to_unless_current("All Comments", :status => "all", :page_id => params[:page_id]) %> 
-  <%= content_tag :span, link_to_unless_current("Approved Comments", :status => "approved", :page_id => params[:page_id]) %> 
-  <%= content_tag :span, link_to_unless_current("Unapproved Comments", :status => "unapproved", :page_id => params[:page_id]) %>
-</p>
-
-<table id="comments" class="index" border="0" cellspacing="0" cellpadding="0">
-  <tbody>
-    <%= render :partial => "comment", :collection => (@comments) %>
-  </tbody>
-</table>
-
-<p><%= link_to "Delete All Unapproved", destroy_unapproved_comments_url, :method => :delete %></p>
+<ul id="comment-nav">
+  <li class="all"><%= link_or_span_unless_current("All", :status => 'all', :page_id => params[:page_id]) %></li>
+  <li class="approved"><%= link_or_span_unless_current("Approved", :status => "approved", :page_id => params[:page_id]) %></li>
+  <li class="unapproved"><%= link_or_span_unless_current("Unapproved", :status => "unapproved", :page_id => params[:page_id]) %></li>
+  <li class="csv"><%= link_to "Download CSV", :format => :csv %></li>
+</ul>
 
 <%= will_paginate @comments %>
 
-<% if Comment.new.akismet.valid? %>
-  <small class="notice">Protected by <a href="http://akismet.com/">Akismet</a></small>
-<% elsif Comment.new.mollom.key_ok? %>
-  <small class="notice">Protected by <a href="http://mollom.com">Mollom</a></small>
-<% elsif current_user.developer? %>
-  <small class="note">You have 3 built-in options for spam protection although currently comments are not automatically protected. Install <a href="http://mollom.com">Mollom</a> or <a href="http://akismet.com/">Akismet</a> to protect against comment spam through an external service, or use the &lt;r:comments:spam_answer_tag /&gt;. Instructions may be found in the README.</small>
+<table id="comments" class="index" border="0" cellspacing="0" cellpadding="0">
+  <thead>
+    <tr>
+      <th>Content</th>
+      <th>Date</th>
+      <th>Author</th>
+      <% unless @page %><th>Page</th><% end %>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>] %>
+  </tbody>
+</table>
+
+<%= will_paginate @comments %>
+
+<% form_tag destroy_unapproved_admin_comments_url, :method => :delete do %>
+<p><button type="submit" class="delete-unapproved"><%= image_tag("admin/comments_delete.png") %> Delete All Unapproved</button></p>
 <% end %>
 
-<script type="text/javascript">
-// <![CDATA[
-  new RuledTable('comments');
-// ]]>
-</script>
+<p><small class="notice"><%= Comment.spam_filter.message %></small></p>

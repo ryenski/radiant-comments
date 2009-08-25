@@ -92,7 +92,9 @@ CONTENT
       <label for="comment_filter_id">Filter: <r:filter_box_tag name="filter_id" value="Textile" /></label><br />
       <r:text_area_tag name="content" class="required" rows="9" cols="40" /></p>
 
-      <r:snippet name="comment_spam_block" />
+      <r:if_comments_simple_spam_filter_enabled>
+        <r:snippet name="comment_spam_block" />
+      </r:if_comments_simple_spam_filter_enabled>
 
       <r:submit_tag name="submit" value="Save Comment" />
 

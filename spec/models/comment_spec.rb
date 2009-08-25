@@ -1,17 +1,11 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Comment do
+describe "Comment" do
   dataset :comments
 
   before do
-    @akismet = mock("akismet", :valid? => true, :commentCheck => false)
-    @mollom_response = mock("response", :ham? => true, :session_id => '00011001')
-    @mollom = mock("mollom", :key_ok? => false, :check_content => @mollom_response, :server_list= => '')
     @page = pages(:home)
-    
     Radiant::Config['comments.auto_approve'] = 'true'
-    Akismet.stub!(:new).and_return(@akismet)
-    Mollom.stub!(:new).and_return(@mollom)
   end
   
   describe "self.per_page" do
@@ -42,21 +36,26 @@ describe Comment do
     
     it "should escape html for content_html when a filter is not selected" do
       @comment.content = %{<script type="text/javascript">alert('hello')</script>}
-      @comment.save!
-      @comment.content_html.should == %{<p>&lt;script type=&quot;text/javascript&quot;&gt;alert('hello')&lt;/script&gt;</p>}
+      @comment.save!  
+      @comment.content_html.should == %{<p>alert(&#39;hello&#39;)</p>}
     end
-    it "should sanitize and filter the content for content_html when a filter is selected" do
-      @comment.filter_id = 'Textile'
-      @comment.content = %{*hello*<script type="text/javascript">alert('hello')</script>}
+    it "should sanitize the content" do
+      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
       @comment.save!
-      @comment.content_html.should == %{<p><strong>hello</strong></p>}
+      @comment.content_html.should_not include_text('script')
+    end
+    it "should filter the content for content_html when a filter is selected" do
+      @comment.filter_id = 'Textile'
+      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
+      @comment.save!
+      @comment.content_html.should match(/<strong>hello<\/strong>/)
     end
     it "should escape the content for content_html when a filter is not selected" do
       Radiant::Config['comments.filters_enabled'] = 'true'
       @comment.filter_id = ''
-      @comment.content = %{*hello*<script type="text/javascript">alert('hello')</script>}
+      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
       @comment.save!
-      @comment.content_html.should == %{<p>*hello*&lt;script type=&quot;text/javascript&quot;&gt;alert('hello')&lt;/script&gt;</p>}
+      @comment.content_html.should_not include_text('script')
     end
 
     it "should successfully create comment" do
@@ -66,61 +65,7 @@ describe Comment do
 
     it "should set content_html with filter when saving" do
       @comment.save
-
-      @comment.content_html.should eql("<p>That's all I have to say about that.</p>")
-    end
-
-    it "should auto_approve the comment if it is valid according to Akismet" do
-      @akismet.should_receive(:valid?).and_return(true)
-      @akismet.should_receive(:commentCheck).and_return(false) # False is good here :)
-
-      @comment.save
-
-      @comment.approved_at.should_not be_nil
-      @comment.approved_at.should be_instance_of(Time)
-    end
-
-    it "should NOT auto_approve the comment if it is INVALID" do
-      @akismet.should_receive(:valid?).and_return(true)
-      @akismet.should_receive(:commentCheck).and_return(true)
-
-      @comment.save
-
-      @comment.approved_at.should be_nil
-    end
-
-    it "should auto_approve the comment if it is valid according to Mollom" do
-      @akismet.should_receive(:valid?).and_return(false)
-      @mollom.should_receive(:key_ok?).at_least(1).times.and_return(true)
-      @mollom.should_receive(:check_content).and_return(@mollom_response)
-
-      @comment.save!
-
-      @comment.approved_at.should_not be_nil
-      @comment.approved_at.should be_instance_of(Time)
-    end
-
-    it "should save the mollom servers if the key is valid" do
-      @akismet.should_receive(:valid?).and_return(false)
-      @mollom.should_receive(:key_ok?).at_least(1).times.and_return(true)
-      @mollom.should_receive(:check_content).and_return(@mollom_response)
-      @mollom.should_receive(:server_list).at_least(1).times.and_return({:server1 => "one", :server2 => "two"})
-      Rails.cache.read('MOLLOM_SERVER_CACHE').should be_blank
-      @cache = Rails.cache.stub!(:read).with('MOLLOM_SERVER_CACHE').and_return(@mollom.server_list.to_yaml)
-      @cache.stub!(:blank?).and_return(true)
-      @mollom.should_receive(:server_list=).at_least(1).times
-      @comment.save!
-      Rails.cache.read('MOLLOM_SERVER_CACHE').should == @mollom.server_list.to_yaml
-    end
-
-    it "should NOT save the mollom servers if the key is INVALID" do
-      @akismet.should_receive(:valid?).and_return(false)
-      @mollom.should_receive(:key_ok?).at_least(1).times.and_return(false)
-      
-      Rails.cache.should_not_receive(:write)
-      @comment.spam_answer = nil
-      @comment.valid_spam_answer = nil
-      @comment.save!
+      @comment.content_html.should eql("<p>That&#39;s all I have to say about that.</p>")
     end
 
     it "should validate that author is supplied" do
@@ -138,37 +83,42 @@ describe Comment do
       comment.valid?.should be_false
     end
 
+    it "should add a http:// prefix when author_url does not include a protocol" do
+      url = 'www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == "http://#{url}"
+    end
+
+    it "should not alter author_url with a http:// prefix" do
+      url = 'http://www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
+
+    it "should not alter author_url with a https:// prefix" do
+      url = 'https://www.example.com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
+
+    it "should encode special characters in author_url" do
+      url = 'http://example.com/~foo/q?a=1&b=2'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == CGI.escapeHTML(url)
+    end
+    
+    it "should not alter author_url with a HTTP:// prefix" do
+      url = 'HTTP://Www.Example.Com'
+      @comment.author_url = url
+      @comment.save!
+      @comment.author_url.should == url
+    end
   end
   
-  describe "not using spam answer" do
-    it "should save a comment" do
-      @comment = comments(:first)
-      @comment.spam_answer = nil
-      @comment.valid_spam_answer = nil
-      lambda { @comment.save! }.should_not raise_error
-    end
-  end
-
-  describe "using spam answer" do
-    it "should error that the 'Spam answer is not correct' when saved with a spam_answer and valid_spam_answer that do not match" do
-      Radiant::Config['comments.simple_spam_filter_required?'] = true
-      @comment = comments(:first)
-      @comment.valid_spam_answer = 'TRUE'
-      @comment.spam_answer = 'FALSE'
-      @comment.send(:simple_spam_filter_required?).should be_true
-      lambda{ @comment.save! }.should raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Spam answer is not correct.')
-    end
-    it "should allow differing capitalization and punctuation in the answers when comparing" do
-      @comment = comments(:first)
-      correct_answer = "that's   THE    way it ought to be!".to_slug
-      hashed_answer = Digest::MD5.hexdigest(correct_answer)
-      @comment.valid_spam_answer = hashed_answer
-      @comment.spam_answer = "That's the way it ought to be!"
-      
-      lambda{ @comment.save! }.should_not raise_error
-    end
-  end
-
   def create_comment(opts={})
     Comment.new({ :page => @page, :author => "Test", :author_email => "test@test.com", :author_ip => "10.1.10.1",
                   :content => "Test..." }.merge(opts))

@@ -14,6 +14,7 @@ If you want to contribute features or fixes please write your specs and code and
 * Requires Radiant 0.7.1 or greater.
 * Requires will_paginate Rails plugin (http://github.com/mislav/will_paginate/tree/master)
 * Requires fastercsv 1.2.3 or greater.
+* Requires sanitize 1.0.8 or greater.
 
 == Installation 
 
@@ -29,6 +30,7 @@ See the included HELP docs here or read them in your Radiant interface with the 
 
 == Contributors
 
+* John Muhl
 * Sven Schwyn
 * Gerrit Kaiser
 * Stephen Lombardo
@@ -41,7 +43,11 @@ See the included HELP docs here or read them in your Radiant interface with the 
 * Jon Leighton
 * Witter Cheng
 * Keith Bingman
-* Sean Cribbs
+* Sean Cribbs, partly sponsored by http://opscode.com/
 * Ryan Heneise
 
 If you contribute, go ahead and add your name to the list! 
+
+== Credits
+
+Included icons come from the FamFamFam Silk icon set.  http://famfamfam.com
