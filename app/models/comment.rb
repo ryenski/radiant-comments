@@ -1,4 +1,5 @@
 require 'digest/md5'
+require 'sanitize' 
 class Comment < ActiveRecord::Base
   belongs_to :page, :counter_cache => true
 
