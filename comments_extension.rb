@@ -21,7 +21,9 @@ class CommentsExtension < Radiant::Extension
   end
 
   def activate
-    require 'sanitize'
+    extension_config do |config|
+      config.gem 'sanitize'
+    end
     
     Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
       require file
