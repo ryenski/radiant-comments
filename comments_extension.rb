@@ -2,6 +2,10 @@ class CommentsExtension < Radiant::Extension
   version "0.1"
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
+  
+  extension_config do |config|
+    config.gem 'sanitize'
+  end
 
   define_routes do |map|
     map.namespace :admin do |admin|
@@ -21,10 +25,6 @@ class CommentsExtension < Radiant::Extension
   end
 
   def activate
-    extension_config do |config|
-      config.gem 'sanitize'
-    end
-    
     Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
       require file
     end
