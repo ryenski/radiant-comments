@@ -24,6 +24,14 @@ To install Comments, run:
 
 This _WILL_ delete any snippets named 'comment', 'comments' and 'comment_form' if these exist.
 
+If you are upgrading from a previous version with out the sanitizer run:
+
+  rake radiant:extensions:comments:initialize
+
+or if you want to clean up your initializer for the sanitize gem run:
+
+  rake radiant:extensions:comments:forced_initialize
+
 == More Help
 
 See the included HELP docs here or read them in your Radiant interface with the Help extension installed.
