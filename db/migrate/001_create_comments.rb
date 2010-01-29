@@ -15,9 +15,10 @@ class CreateComments < ActiveRecord::Migration
       t.column :referrer, :string
     end
     
-    add_column :pages, :enable_comments, :boolean
+    add_column :pages, :enable_comments, :boolean, :default => false
     add_column :pages, :comments_count,  :integer, :default => 0
-    execute "UPDATE pages SET comments_count = 0"
+    Page.reset_column_information
+    Page.update_all("comments_count = 0")
   end
   
   def self.down
