@@ -41,7 +41,7 @@ class CommentsExtension < Radiant::Extension
       admin.page.index.add :node, "index_view_comments"
     end
 
-    admin.tabs.add "Comments", "/admin/comments", :visibility => [:all]
+    tab('Content').add_item("Comments", "/admin/comments", :after => "Pages")
     require "fastercsv"
 
     ActiveRecord::Base.class_eval do
