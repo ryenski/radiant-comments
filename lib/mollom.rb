@@ -1,6 +1,8 @@
 require 'xmlrpc/client'
 require 'openssl'
 require 'base64'
+require 'mollom/content_response'
+require 'mollom/api_compatibility'
 
 # Mollom API requires this to change, but this gives a warning!
 # XMLRPC::Client::USER_AGENT = "Ruby Mollom/0.1"
@@ -24,7 +26,7 @@ class Mollom
   #   Mollom.new(:private_key => 'qopzalnzanzajlazjna', :public_key => 'aksakzaddazidzaodjaz')
   #   # => #<Mollom:0x5b6454 @public_key="aksakzaddazidzaodjaz", @private_key="qopzalnzanzajlazjna">
   
-  def initialize(options = {})
+  def initialize options = {}
     @private_key = options[:private_key]
     @public_key = options[:public_key]
   end
@@ -50,8 +52,8 @@ class Mollom
   #                                  :author_url => 'http://www.openminds.be'
   #  response.spam? # => false
   #  response.ham?  # => true
-  def check_content(content = {})
-    return ContentResponse.new(send_command('mollom.checkContent', content))
+  def check_content content = {}
+    ContentResponse.new(send_command('mollom.checkContent', content))
   end
 
   # Requests an Image captcha from Mollom. It takes the optional <tt>session_id</tt> and <tt>author_ip</tt> keys, if you allready have a session.
@@ -60,8 +62,8 @@ class Mollom
   #  captcha = mollom.image_captcha :author_ip => '172.16.0.1'
   #  captcha['url']        # => http://xmlrpc1.mollom.com:80/a9616e6b4cd6a81ecdd509fa624d895d.png
   #  captcha['session_id'] # => a9616e6b4cd6a81ecdd509fa624d895d
-  def image_captcha(info = {})
-    return send_command('mollom.getImageCaptcha', info)
+  def image_captcha info = {}
+    send_command('mollom.getImageCaptcha', info)
   end
 
   # Requests an Audio captcha from Mollom. It takes the optional +session_id+ and +author_ip+ keys, if you allready have a session.
@@ -70,8 +72,8 @@ class Mollom
   #  captcha = mollom.audio_captcha :author_ip => '172.16.0.2', :session_id => 'a9616e6b4cd6a81ecdd509fa624d895d'
   #  captcha['url']        # => http://xmlrpc1.mollom.com:80/a9616e6b4cd6a81ecdd509fa624d895d.mp3
   #  captcha['session_id'] # => a9616e6b4cd6a81ecdd509fa624d895d
-  def audio_captcha(info = {})
-    return send_command('mollom.getAudioCaptcha', info)
+  def audio_captcha info = {}
+    send_command('mollom.getAudioCaptcha', info)
   end
 
   # Checks with mollom if the given captcha (by the user) is correct. Takes +session_id+ and +solution+ keys. Both keys are required.
@@ -81,15 +83,15 @@ class Mollom
   #  # show to user... input from user
   #  return = mollom.valid_captcha? :session_id => captcha['session_id'], :solution => 'abcDe9'
   #  return # => true
-  def valid_captcha?(info = {})
-    return send_command('mollom.checkCaptcha', info)
+  def valid_captcha? info = {}
+    send_command('mollom.checkCaptcha', info)
   end
 
   # Standard check to see if your public/private keypair are recognized. Takes no options
   def key_ok?
-    return send_command('mollom.verifyKey')
-  rescue
-    return false
+    send_command('mollom.verifyKey')
+  rescue XMLRPC::FaultException
+    false
   end
 
   # Gets some statistics from Mollom about your site.
@@ -104,8 +106,8 @@ class Mollom
   #  today_rejected
   #
   #  mollom.statistics :type => 'total_accepted' # => 123
-  def statistics(options = {})
-    return send_command('mollom.getStatistics', options)
+  def statistics options = {}
+    send_command('mollom.getStatistics', options)
   end
 
   # Send feedback to Mollom about a certain content. Required keys are +session_id+ and +feedback+. 
@@ -117,8 +119,15 @@ class Mollom
   #  unwanted
   #
   #  mollom.send_feedback :session_id => 'a9616e6b4cd6a81ecdd509fa624d895d', :feedback => 'unwanted'
-  def send_feedback(feedback = {})
-    return send_command('mollom.sendFeedback', feedback)
+  def send_feedback feedback = {}
+    send_command('mollom.sendFeedback', feedback)
+  end
+  
+  # Gets language of input text.
+  #
+  # mollom.language_for 'This is my text'
+  def language_for text
+    send_command('mollom.detectLanguage', :text => text)
   end
 
   # Gets a list of servers from Mollom. You should cache this information in your application in a temporary file or in a database. You can set this with Mollom#server_list=
@@ -127,8 +136,8 @@ class Mollom
   #
   #  mollom.server_list
   #  # => [{:proto=>"http", :host=>"88.151.243.81"}, {:proto=>"http", :host=>"82.103.131.136"}]
-  def server_list(refresh = false)
-    return @server_list if @server_list && !refresh
+  def server_list refresh = false
+    return @server_list if @server_list && refresh
     STATIC_SERVER_LIST.each do |static_server|
       @server_list = get_server_list_from(static_server)
       return @server_list if @server_list
@@ -160,7 +169,8 @@ class Mollom
   def send_command(command, data = {})
     server_list.each do |server|
       begin
-        return XMLRPC::Client.new(server[:host], "/#{API_VERSION}").call(command, data.merge(authentication_hash))
+        client = XMLRPC::Client.new(server[:host], "/#{API_VERSION}")
+        return client.call(command, data.merge(authentication_hash))
       # TODO: Rescue more stuff (Connection Timeout and such)
       rescue XMLRPC::FaultException => error
         case error.faultCode
@@ -195,52 +205,8 @@ class Mollom
     return :public_key=> @public_key, :time => now, :hash => hash, :nonce => nonce
   end
 
-  class ContentResponse
-    attr_reader :session_id, :quality
-
-    Unknown = 0
-    Ham  = 1
-    Unsure = 2
-    Spam = 3
-
-    # This class should only be initialized from within the +check_content+ command.
-    def initialize(hash)
-      @spam_response = hash["spam"]
-      @session_id = hash["session_id"]
-      @quality = hash["quality"]
-    end
-
-    # Is the content Spam?
-    def spam?
-      @spam_response == Spam
-    end
-
-    # Is the content Ham?
-    def ham?
-      @spam_response == Ham
-    end
-
-    # is Mollom unsure about the content?
-    def unsure?
-      @spam_response == Unsure
-    end
-
-    # is the content unknown?
-    def unknown?
-      @spam_response == Unknown
-    end
-    
-    # Returns 'unknown', 'ham', 'unsure' or 'spam', depending on what the content is.
-    def to_s
-      case @spam_response
-      when Unknown 	then 'unknown'
-      when Ham 		then 'ham'
-      when Unsure 	then 'unsure'
-      when Spam 	then 'spam'
-      end
-    end
-  end
-  
   class Error < StandardError; end
   class NoAvailableServers < Error; end
+  
+  include ApiCompatibility
 end
