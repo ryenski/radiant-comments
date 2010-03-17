@@ -6,6 +6,7 @@ class CommentsExtension < Radiant::Extension
   extension_config do |config|
     config.gem 'sanitize'
     config.gem 'will_paginate'
+    config.gem 'mollom'
   end
 
   define_routes do |map|
