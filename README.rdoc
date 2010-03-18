@@ -15,6 +15,7 @@ If you want to contribute features or fixes please write your specs and code and
 * Requires will_paginate Rails plugin (http://github.com/mislav/will_paginate/tree/master)
 * Requires fastercsv 1.2.3 or greater.
 * Requires sanitize 1.0.8 or greater.
+* Requires mollom 0.2.2 or greater.
 
 == Installation 
 
