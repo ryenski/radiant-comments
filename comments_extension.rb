@@ -23,7 +23,7 @@ class CommentsExtension < Radiant::Extension
       comments.admin_page_comment 'admin/pages/:page_id/comments/:id/:action'
     end
     # This needs to be last, otherwise it hoses the admin routes.
-    map.resources :comments, :name_prefix => "page_", :path_prefix => "*url", :controller => "comments"
+    map.resources :comments, :name_prefix => "page_", :path_prefix => "*url", :controller => "comments", :collection => { :solve_captcha => :post }
   end
 
   def activate

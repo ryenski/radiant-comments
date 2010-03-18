@@ -8,9 +8,20 @@ class MollomSpamFilter < SpamFilter
     !Radiant::Config['comments.mollom_publickey'].blank?
   end
 
+  def valid?(comment)
+    approved?(comment)
+  rescue SpamFilter::Unsure
+  end
+  
   def approved?(comment)
-    (mollom.key_ok? && ham?(comment)) || raise(SpamFilter::Spam)
-  rescue Mollom::Error, SpamFilter::Spam
+    if mollom.key_ok?
+      if ham?(comment)
+        return true 
+      elsif mollom_response(comment).to_s == 'spam'
+        raise Spam, "Mollom believes this is spam."
+      end
+    end
+  rescue Mollom::Error
     false
   end
 
@@ -32,19 +43,23 @@ class MollomSpamFilter < SpamFilter
     end
   end
 
-  private
-  def ham?(comment)
-    response = mollom.check_content(
+  def mollom_response(comment)
+    mollom.check_content(
       :author_name => comment.author,            # author name
       :author_mail => comment.author_email,         # author email
       :author_url => comment.author_url,           # author url
       :post_body => comment.content              # comment text
       )
-    comment.mollom_id = response.session_id
+  end
+  
+  private
+  
+  def ham?(comment)
+    response = mollom_response(comment)
     save_mollom_servers
     response.ham?
   end
-
+  
   def save_mollom_servers
     Rails.cache.write('MOLLOM_SERVER_CACHE', mollom.server_list.to_yaml) if mollom.key_ok?
   rescue Mollom::Error #TODO: something with this error...

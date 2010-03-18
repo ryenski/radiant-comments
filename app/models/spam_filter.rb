@@ -40,4 +40,5 @@ class SpamFilter
   end
   
   class Spam < ::StandardError; end
+  class Unsure < ::StandardError; end
 end

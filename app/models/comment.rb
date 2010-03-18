@@ -36,8 +36,12 @@ class Comment < ActiveRecord::Base
     self.referrer = request.env['HTTP_REFERER']
   end
 
+  def is_ham?
+    spam_filter.valid?(self)
+  end
+
   def auto_approve?
-    Radiant::Config['comments.auto_approve'] == "true" && spam_filter.approved?(self)
+    Radiant::Config['comments.auto_approve'] == "true" && is_ham?
   end
 
   def unapproved?
@@ -76,6 +80,7 @@ class Comment < ActiveRecord::Base
     
     def auto_approve
       self.approved_at = Time.now if auto_approve?
+      true
     end
 
     def apply_filter

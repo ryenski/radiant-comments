@@ -206,6 +206,41 @@ module CommentTags
   tag 'comments:error:message' do |tag|
     tag.locals.error_message
   end
+  
+  desc %{
+    Renders a CAPTCHA if the posted comment was found unsure by Mollom.
+    
+    *Usage:*
+    <r:comments:mollom_captcha label="hey.. are you even human?"] />
+  }
+  tag "comments:mollom_captcha" do |tag|
+    if url = tag.locals.page.captcha_url
+      text = tag.attr['label']||"We are unsure if you are a real person or a spam bot.. Please solve this CAPTCHA:"
+      return %{
+        <div id="captcha_form">
+          <form method="post" action="#{tag.locals.page.url}comments/solve_captcha">
+          <label for="captcha_answer">#{text}</label>
+          <img src="#{url}" alt="Mollom image CAPTCHA" /><br />
+          <input type="text" name="captcha_answer" />
+          <input type="hidden" name="comment_mollom_id" value="#{tag.locals.page.comment_mollom_id}"/>
+          <input type="submit" />
+          </form>
+        </div>
+      }
+    end
+  end
+  
+  desc %{
+    Only expands if the posted comment is thought to be spam.
+    
+    *Usage:*
+    <r:comments:spam_message><p class="spam error">Dude... not cool!</p></r:comments:spam_message>
+  }
+  tag "comments:spam_message" do |tag|
+    if tag.locals.page.posted_comment_is_spam == true
+      tag.expand
+    end
+  end
 
   %w(text password hidden).each do |type|
     desc %{Builds a #{type} form field for comments.}
