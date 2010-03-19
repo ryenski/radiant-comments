@@ -1,17 +1,19 @@
 <% content_for :page_scripts do -%>
   document.observe('dom:loaded', function(){
-    when($$('tr.comment blockquote.expanded'), function(bqs){
-      bqs.each(function(bq){
-        var td = bq.up();
-        td.observe('click', function(e){
-          e.stop();
-          td.select('blockquote').invoke('toggle');
+    Event.addBehavior({
+      'tr.comment td': function(event){
+        $(this).observe('click', function(event){
+          if($(this).down('blockquote.expanded')){
+            $(this).down('blockquote.expanded').toggle();
+            $(this).down('blockquote.short').toggle();
+          }
+          event.stop();
         });
-      });
+      }
     });
   });
 <% end %>
-<% include_stylesheet 'admin/comments' %>
+<%- include_stylesheet 'admin/comments' %>
 <h1>
   <% if @page -%>
     <%= @page.comments.count %> <%= "#{params[:status].titleize} " if params[:status] %><%= pluralize(@page.comments.count, 'Comment') %> on <%= link_to @page.title, edit_admin_page_path(@page) %>
