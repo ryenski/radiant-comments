@@ -1,5 +1,5 @@
 class CommentsExtension < Radiant::Extension
-  version "0.1"
+  version "0.0.7"
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
   
