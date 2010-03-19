@@ -1,5 +1,11 @@
 = Git
 
+= 0.0.7
+
+* Updated to use of the Mollom gem i.o. local copy [Benny Degezelle]
+* Updated to use mollom to it's full potential (show CAPTCHA when unsure) [Benny Degezelle]
+* Added r:comments:spam_message which only expands if a posted comment is thought to be spam [Benny Degezelle]
+
 = 0.0.6
 
 * Added spam_answer_tag for simple spam protection or CAPTCHA
