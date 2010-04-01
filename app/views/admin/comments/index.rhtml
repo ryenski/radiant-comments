@@ -1,7 +1,7 @@
 <% content_for :page_scripts do -%>
   document.observe('dom:loaded', function(){
     Event.addBehavior({
-      'tr.comment td': function(event){
+      'tr.comment td.content': function(event){
         $(this).observe('click', function(event){
           if($(this).down('blockquote.expanded')){
             $(this).down('blockquote.expanded').toggle();
