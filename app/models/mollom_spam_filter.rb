@@ -48,7 +48,8 @@ class MollomSpamFilter < SpamFilter
       :author_name => comment.author,            # author name
       :author_mail => comment.author_email,         # author email
       :author_url => comment.author_url,           # author url
-      :post_body => comment.content              # comment text
+      :post_body => comment.content,              # comment text
+      :author_ip => comment.author_ip
       )
   end
   
