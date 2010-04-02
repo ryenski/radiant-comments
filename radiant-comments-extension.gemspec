@@ -63,6 +63,7 @@ Gem::Specification.new do |s|
      "lib/comment_page_extensions.rb",
      "lib/comment_tags.rb",
      "lib/mollom.rb",
+     "lib/radiant-comments-extension.rb",
      "lib/tasks/comments_extension_tasks.rake",
      "public/images/admin/accept.png",
      "public/images/admin/comment_edit.png",
