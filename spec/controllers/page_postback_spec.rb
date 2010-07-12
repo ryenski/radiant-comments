@@ -4,7 +4,8 @@ describe SiteController, "Comments form posting to page" do
   dataset :pages
   
   before :each do
-    Radiant::Config['comments.post_to_page?'] = true
+    Radiant::Config['comments.post_to_page?'] = 'true'
+    Radiant::Config['comments.auto_approve'] = 'true'
   end
   
   def do_post(comment_params={})
