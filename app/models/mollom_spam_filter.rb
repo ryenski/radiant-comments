@@ -10,7 +10,7 @@ class MollomSpamFilter < SpamFilter
 
   def approved?(comment)
     (mollom.key_ok? && ham?(comment)) || raise(SpamFilter::Spam)
-  rescue Mollom::Error, SpamFilter::Spam
+  rescue Mollom::Error, SpamFilter::Spam, TimeoutError
     false
   end
 

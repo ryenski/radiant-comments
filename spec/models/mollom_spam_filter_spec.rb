@@ -65,6 +65,11 @@ describe MollomSpamFilter do
       MollomSpamFilter.should be_approved(@comment)
     end
     
+    it "should not be approved when the API is unreachable" do
+      @mollom.stub!(:check_content).and_raise(TimeoutError)
+      MollomSpamFilter.should_not be_approved(@comment)
+    end
+    
     it "should cache the Mollom server list after a successful response" do
       Rails.cache.should_receive(:write).with('MOLLOM_SERVER_CACHE', anything())
       MollomSpamFilter.should be_approved(@comment)
