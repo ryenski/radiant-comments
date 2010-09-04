@@ -1,5 +1,5 @@
 class CommentsExtension < Radiant::Extension
-  version "0.0.7"
+  version "#{File.read(File.expand_path(File.dirname(__FILE__)) + '/VERSION')}"
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
   
@@ -41,8 +41,14 @@ class CommentsExtension < Radiant::Extension
       admin.page.index.add :sitemap_head, "index_head_view_comments"
       admin.page.index.add :node, "index_view_comments"
     end
-
-    tab('Content').add_item("Comments", "/admin/comments", :after => "Pages")
+    
+    if self.respond_to? :tab
+      tab "Content" do
+        add_item('Comments', '/admin/comments')
+      end
+    else
+      admin.tabs.add "Comments", "/admin/comments", :visibility => [:all]
+    end
     require "fastercsv"
 
     ActiveRecord::Base.class_eval do
