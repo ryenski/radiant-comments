@@ -1,0 +1,32 @@
+- if Comment.spam_filter == SimpleSpamFilter
+  %div{:style => "display:none"}
+    = f.hidden_field :spam_answer, :value => "hemidemisemiquaver"
+    = f.hidden_field :valid_spam_answer, :value => Digest::MD5.hexdigest("hemidemisemiquaver")
+
+#comment_form_container.form-area
+  .row
+    %p
+      %label{:for => "comment_author"}= t('author')
+      %br/
+      = f.text_field :author
+    %p
+      %label{:for => "comment_author_url"}= t('url')
+      %br/
+      = f.text_field :author_url
+  %br{:style => "clear: both"}
+  %p
+    %label{:for => "comment_author_email"}= t('email')
+    %br/
+    = f.text_field :author_email
+  %p
+    %label{:for => "comment_content"}= t('comment')
+    %br/
+    = f.text_area :content, :rows => 10, :cols => 72, :class => "textarea"
+  %p
+    %label{:for => "comment_filter_id"}= t('filter')
+    = f.select :filter_id, [['<none>', '']] + TextFilter.descendants.map { |s| s.filter_name }.sort
+
+%p.buttons
+  = save_model_button(@comment)
+  = t('or')
+  = link_to t('cancel'), :back

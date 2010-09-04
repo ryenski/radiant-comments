@@ -1,0 +1,7 @@
+%p{:style => "clear:left"}
+  %label{:for => "page_enable_comments"}
+    = check_box "page", "enable_comments"
+    = t('allow_comments_on_page')
+  - unless @page.new_record? or @page.comments_count < 1
+    %small
+      = link_to t('currently_x_view_comments', :count => @page.comments_count), admin_page_comments_path(:page_id => @page.id)

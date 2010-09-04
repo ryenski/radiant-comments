@@ -1,0 +1,4 @@
+%h1= "#{t('edit_comment_on')} #{escape_once(@comment.page.title)}"
+
+- form_for [:admin, @comment] do |f|
+  = render :partial => "form", :locals => {:f => f}

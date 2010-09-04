@@ -1,0 +1,7 @@
+%td.comment_link
+  - if page.respond_to?('enable_comments')
+    %small
+      - if page.enable_comments
+        = link_to "#{page.comments_count} comments", admin_page_comments_path(:page_id => page.id)
+      - else
+        = link_to "Enable", admin_page_enable_comments_path(:page_id => page.id), :method => :put

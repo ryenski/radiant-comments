@@ -14,13 +14,7 @@ class MollomSpamFilter < SpamFilter
   end
   
   def approved?(comment)
-    if mollom.key_ok?
-      if ham?(comment)
-        return true 
-      elsif mollom_response(comment).to_s == 'spam'
-        raise Spam, "Mollom believes this is spam."
-      end
-    end
+    mollom.key_ok? && ham?(comment)
   rescue Mollom::Error
     false
   end

@@ -1,0 +1,64 @@
+- content_for :page_scripts do
+  :plain
+    document.observe('dom:loaded', function(){
+      Event.addBehavior({
+        'tr.comment td.content': function(event){
+          $(this).observe('click', function(event){
+            if($(this).down('blockquote.expanded')){
+              $(this).down('blockquote.expanded').toggle();
+              $(this).down('blockquote.short').toggle();
+            }
+            event.stop();
+          });
+        }
+      });
+    });
+  
+- include_stylesheet 'admin/comments'
+
+%h2
+  - if @page
+    = "#{@page.comments.count.to_s} #{t("comment_states.#{params[:status]}")} " if params[:status] 
+    = "#{pluralize(@page.comments.count, 'Comment')} on #{link_to @page.title, edit_admin_page_path(@page)}"
+  - else
+    = t("comment_states.#{params[:status]}") if params[:status] 
+    = params[:status] ? " #{t('comments').downcase}" : t('comments')
+
+#filters
+  %ul#comment-nav
+    %li.all
+      = link_or_span_unless_current(t('comment_states.all'), :status => 'all', :page_id => params[:page_id])
+    %li.approved
+      = link_or_span_unless_current(t('comment_states.approved'), :status => "approved", :page_id => params[:page_id])
+    %li.unapproved
+      = link_or_span_unless_current(t('comment_states.unapproved'), :status => "unapproved", :page_id => params[:page_id])
+    %li.csv
+      = link_to t('download_csv'), :format => :csv
+
+
+#comments_table
+  %table#comments.index
+    %thead
+      %tr
+        %th= t('content')
+        %th= t('date_string')
+        %th= t('author')
+        - unless @page
+          %th= t('page')
+        %th= t('actions')
+    %tbody
+      = render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>]
+%p
+%small.notice
+  = Comment.spam_filter.message
+
+
+#actions
+  = will_paginate @comments
+  %ul
+    %li
+      - form_tag destroy_unapproved_admin_comments_url, :method => :delete do
+        %p
+          %button.delete-unapproved{:type => "submit"}
+            = image_tag("admin/comments_delete.png")
+            = t('delete_unapproved')

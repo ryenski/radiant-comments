@@ -29,6 +29,10 @@ class CommentsController < ApplicationController
     elsif Comment.spam_filter == MollomSpamFilter && MollomSpamFilter.mollom_response(comment).to_s == 'unsure'
       set_up_page_with_captcha(comment)
       render :text => @page.render and return
+    else
+      @page.posted_comment_is_spam = true
+      #comment.destroy
+      render :text => @page.render
     end
   rescue ActiveRecord::RecordInvalid
     if comment.errors.on(:spam_answer)

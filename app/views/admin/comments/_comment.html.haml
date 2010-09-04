@@ -1,0 +1,26 @@
+%tr{:id => dom_id(comment), :class => "comment#{'approved' if comment.approved?}"}
+  %td.content{:title => comment.content.size >= 70 ? t('click_to_toggle') : "" }
+    %blockquote.short= escape_once(truncate(comment.content, :length => 70))
+    - if comment.content.size >= 70
+      %blockquote.expanded{:style => "display:none"}
+        = escape_once(comment.content)
+  %td.date
+    = comment.created_at.strftime("%b %e, %Y at %I:%M%p")
+  %td.author
+    = escape_once(comment.author)
+    - unless comment.author_email.blank?
+      = mail_to(comment.author_email, image_tag("admin/email.png"))
+    - unless comment.author_url.blank?
+      = link_to(image_tag("admin/link.png"), comment.author_url)
+  - unless @page
+    %td.page
+      = link_to truncate(comment.page.title, :length => 40), comment.page.url, :class => 'view-page'
+      = link_to image_tag("admin/page_white_edit.png"), edit_admin_page_path(comment.page), :title => t('edit_page')
+  %td.controls
+    - if comment.approved?
+      = link_to(image_tag('admin/error.png'), unapprove_admin_comment_path(comment), :method => :put, :title => t('unapprove_comment'))
+    - else
+      = link_to(image_tag('admin/accept.png'), approve_admin_comment_path(comment), :title => t('approve_comment'), :method => :put)
+    
+    = link_to image_tag("admin/delete.png"), admin_comment_path(comment), :method => :delete, :confirm => t('are_you_sure_you_want_to_delete_this_comment'), :title => t('delete_comment')
+    = link_to image_tag("admin/comment_edit.png"), edit_admin_comment_path(comment), :title => t('edit_comment')

@@ -1,0 +1,26 @@
+nl: 
+  actions: Acties
+  allow_comments_on_page: Reacties toelaten?
+  author: Auteur
+  approve_comment: Reactie goedkeuren
+  are_you_sure_you_want_to_delete_this_comment: Ben je zeker dat je deze reactie wilt verwijderen?
+  click_to_toggle: Klik om de volledige reactie te tonen
+  currently_x_view_comments: Momenteel {{count}} - toon reacties
+  comment: Reactie
+  comments: Reacties
+  comment_form: Reactieformulier
+  comment_states:
+    all: Alle
+    unapproved: Te modereren
+    approved: Doorgelaten
+  date_string: Datum
+  delete_comment: Reactie verwijderen
+  delete_unapproved: Te modereren reacties verwijderen
+  download_csv: CSV downloaden
+  edit_comment: Wijzig reactie
+  edit_comment_on: Wijzig reactie op
+  email: E-mail
+  message_unsure: Vul onderstaande CAPTCHA in om te bewijzen dat je geen spam-bot bent
+  unapprove_comment: Reactie terug naar Te modereren
+  url: URL
+  your_name: Naam (die je bij deze reactie wilt tonen)
