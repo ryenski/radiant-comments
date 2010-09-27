@@ -1,8 +1,10 @@
 #comment-nav {
-  float: right;
+  background: #ccc;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   list-style: none;
-  margin: -42px 0 0 96px;
-  padding: 0; }
+  margin: 0;
+  padding: 10px; }
   #comment-nav li {
     display: inline;
     margin: 0 5px 0 0; }
@@ -13,16 +15,32 @@
   #comment-nav a, #comment-nav a:visited {
     color: black; }
   #comment-nav span {
-    border: 1px solid #ffa;
-    background-color: #ffd; }
+    border: 1px solid #e8e8e8;
+    background-color: #eee; }
   #comment-nav li.all a, #comment-nav li.all span {
     background-image: url(/images/admin/comments.png); }
   #comment-nav li.approved a, #comment-nav li.approved span {
     background-image: url(/images/admin/accept.png); }
   #comment-nav li.unapproved a, #comment-nav li.unapproved span {
     background-image: url(/images/admin/error.png); }
-  #comment-nav li.csv a, #comment-nav li.csv span {
-    background-image: url(/images/admin/table_save.png); }
+
+#content .outset {
+  margin-bottom: 40px;
+}
+
+#actions ul li a span {
+  padding-top: 3px;
+  padding-left: 20px;
+  background-position: 0 center;
+  background-repeat: no-repeat;  
+}
+
+#actions ul li.delete a span {
+  background-image: url(/images/admin/comments_delete.png);
+}
+#actions ul li.csv a span {
+  background-image: url(/images/admin/table_save.png);
+}
 
 html>body li.all a, html>body li.all span, html>body li.approved a, html>body li.approved span, html>body li.unapproved a, html>body li.unapproved span, html>body li.csv a, html>body li.csv span {
   *display: inline-block; }

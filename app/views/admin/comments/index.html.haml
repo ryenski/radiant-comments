@@ -24,33 +24,34 @@
     = t("comment_states.#{params[:status]}") if params[:status] 
     = params[:status] ? " #{t('comments').downcase}" : t('comments')
 
-#filters
-  %ul#comment-nav
-    %li.all
-      = link_or_span_unless_current(t('comment_states.all'), :status => 'all', :page_id => params[:page_id])
-    %li.approved
-      = link_or_span_unless_current(t('comment_states.approved'), :status => "approved", :page_id => params[:page_id])
-    %li.unapproved
-      = link_or_span_unless_current(t('comment_states.unapproved'), :status => "unapproved", :page_id => params[:page_id])
-    %li.csv
-      = link_to t('download_csv'), :format => :csv
+.outset
+  #filters
+    %ul#comment-nav
+      %li.all
+        = link_or_span_unless_current(t('comment_states.all'), :status => 'all', :page_id => params[:page_id])
+      %li.approved
+        = link_or_span_unless_current(t('comment_states.approved'), :status => "approved", :page_id => params[:page_id])
+      %li.unapproved
+        = link_or_span_unless_current(t('comment_states.unapproved'), :status => "unapproved", :page_id => params[:page_id])
+      %li.csv
+        = link_to t('download_csv'), :format => :csv
 
 
-#comments_table
-  %table#comments.index
-    %thead
-      %tr
-        %th= t('content')
-        %th= t('date_string')
-        %th= t('author')
-        - unless @page
-          %th= t('page')
-        %th= t('actions')
-    %tbody
-      = render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>]
-%p
-%small.notice
-  = Comment.spam_filter.message
+  #comments_table
+    %table#comments.index
+      %thead
+        %tr
+          %th= t('content')
+          %th= t('date_string')
+          %th= t('author')
+          - unless @page
+            %th= t('page')
+          %th= t('actions')
+      %tbody
+        = render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>]
+  %p
+  %small.notice
+    = Comment.spam_filter.message
 
 
 #actions
