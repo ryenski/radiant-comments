@@ -33,39 +33,23 @@ describe "Comment" do
       @comment.stub!(:using_logic_spam_filter?).and_return(false)
       Radiant::Config['comments.filters_enabled'] = "true"
     end
-    
-    it "should escape html for content_html when a filter is not selected" do
+        
+    it "should remove script elements from the content" do
       @comment.content = %{<script type="text/javascript">alert('hello')</script>}
-      @comment.save!  
-      @comment.content_html.should == %{<p>alert(&#39;hello&#39;)</p>}
-    end
-    it "should sanitize the content" do
-      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
       @comment.save!
-      @comment.content_html.should_not include_text('script')
+      @comment.content_html.should_not =~ /script/
     end
-    it "should filter the content for content_html when a filter is selected" do
+    
+    it "should pass content for content_html through filter when one is selected" do
       @comment.filter_id = 'Textile'
-      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
+      @comment.content = %{*hello*}
       @comment.save!
-      @comment.content_html.should match(/<strong>hello<\/strong>/)
-    end
-    it "should escape the content for content_html when a filter is not selected" do
-      Radiant::Config['comments.filters_enabled'] = 'true'
-      @comment.filter_id = ''
-      @comment.content = %{*hello* <script type="text/javascript">alert('hello')</script>}
-      @comment.save!
-      @comment.content_html.should_not include_text('script')
+      @comment.content_html.should == '<p><strong>hello</strong></p>'
     end
 
     it "should successfully create comment" do
       @comment.valid?.should be_true
       lambda{@comment.save!}.should_not raise_error
-    end
-
-    it "should set content_html with filter when saving" do
-      @comment.save
-      @comment.content_html.should eql("<p>That&#39;s all I have to say about that.</p>")
     end
 
     it "should validate that author is supplied" do

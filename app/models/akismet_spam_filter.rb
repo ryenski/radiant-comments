@@ -10,7 +10,7 @@ class AkismetSpamFilter < SpamFilter
 
   def approved?(comment)
     (akismet.valid? && ham?(comment)) || raise(SpamFilter::Spam)
-  rescue
+  rescue StandardError, TimeoutError
     # Spam and anything raised by Net::HTTP, e.g. Errno, Timeout stuff
     false
   end
