@@ -1,22 +1,22 @@
-%tr{:id => dom_id(comment), :class => "comment#{'approved' if comment.approved?}"}
+%tr{:id => dom_id(comment), :class => "comment comment-#{comment.ap_status}"}
   %td.content{:title => comment.content.size >= 70 ? t('click_to_toggle') : "" }
     %blockquote.short= escape_once(truncate(comment.content, :length => 70))
     - if comment.content.size >= 70
       %blockquote.expanded{:style => "display:none"}
         = escape_once(comment.content)
-  %td.date
+  %td.date-column
     = comment.created_at.strftime("%b %e, %Y at %I:%M%p")
-  %td.author
+  %td.author-column
     = escape_once(comment.author)
     - unless comment.author_email.blank?
       = mail_to(comment.author_email, image_tag("admin/email.png"))
     - unless comment.author_url.blank?
       = link_to(image_tag("admin/link.png"), comment.author_url)
   - unless @page
-    %td.page
+    %td.page-column
       = link_to truncate(comment.page.title, :length => 40), comment.page.url, :class => 'view-page'
       = link_to image_tag("admin/page_white_edit.png"), edit_admin_page_path(comment.page), :title => t('edit_page')
-  %td.controls
+  %td.controls-column
     - if comment.approved?
       = link_to(image_tag('admin/error.png'), unapprove_admin_comment_path(comment), :method => :put, :title => t('unapprove_comment'))
     - else

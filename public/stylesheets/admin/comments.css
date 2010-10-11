@@ -1,59 +1,33 @@
-#comment-nav {
+.comment-nav {
   background: #ccc;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   list-style: none;
   margin: 0;
   padding: 10px; }
-  #comment-nav li {
+  .comment-nav li {
     display: inline;
     margin: 0 5px 0 0; }
-  #comment-nav a, #comment-nav span {
+  .comment-nav a, .comment-nav span {
     padding: 5px 5px 5px 25px;
     background-position: 5px center;
     background-repeat: no-repeat; }
-  #comment-nav a, #comment-nav a:visited {
+  .comment-nav a, .comment-nav a:visited {
     color: black; }
-  #comment-nav span {
+  .comment-nav span {
     border: 1px solid #e8e8e8;
     background-color: #eee; }
-  #comment-nav li.all a, #comment-nav li.all span {
+  .all span, .all a {
     background-image: url(/images/admin/comments.png); }
-  #comment-nav li.approved a, #comment-nav li.approved span {
+  .approved span, .approved a {
     background-image: url(/images/admin/accept.png); }
-  #comment-nav li.unapproved a, #comment-nav li.unapproved span {
+  .unapproved span, .unapproved a {
     background-image: url(/images/admin/error.png); }
 
 #content .outset {
   margin-bottom: 40px;
 }
 
-#actions ul li a span {
-  padding-top: 3px;
-  padding-left: 20px;
-  background-position: 0 center;
-  background-repeat: no-repeat;  
-}
-
-#actions ul li.delete a span {
-  background-image: url(/images/admin/comments_delete.png);
-}
-#actions ul li.csv a span {
-  background-image: url(/images/admin/table_save.png);
-}
-
-html>body li.all a, html>body li.all span, html>body li.approved a, html>body li.approved span, html>body li.unapproved a, html>body li.unapproved span, html>body li.csv a, html>body li.csv span {
-  *display: inline-block; }
-
-* html li.all a, * html li.all span, * html li.approved a, * html li.approved span, * html li.unapproved a, * html li.unapproved span, * html li.csv a, * html li.csv span {
-  display: inline-block; }
-
-#content tr.comment td.content { color: #333; padding-right: 8px; width: 45%; font-size: 75%; }
-#content tr.comment blockquote.short { display: inline; margin: 0 }
-#content tr.comment blockquote.expanded { display:block; margin: 0; padding: 4px; border: 1px solid #bbc; background-color: #eef; }
-#content tr.comment td.controls, #content tr.comment td.date { white-space: nowrap }
-#content tr.comment.approved { background-color: #efe; }
-#content tr.comment a { color: black; }
-#content tr.comment a:visited { color: black; }
-
-button.delete-unapproved { padding: 5px; font-size: 120%; }
+.controls-column, .date-column, .author-column { white-space: nowrap }
+.comment-unapproved { background-color: #ffe; }
+.comment a, .comment a:visited { color: black; }

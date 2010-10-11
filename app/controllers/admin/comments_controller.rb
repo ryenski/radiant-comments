@@ -114,11 +114,7 @@ class Admin::CommentsController < ApplicationController
   end
 
   def clear_cache
-    if defined?(ResponseCache)
-      ResponseCache.instance.clear
-    else
-      Radiant::Cache.clear
-    end
+    Radiant::Cache.clear
   end
 
   def clear_single_page_cache(comment)
