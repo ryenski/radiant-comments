@@ -4,20 +4,16 @@
     = f.hidden_field :valid_spam_answer, :value => Digest::MD5.hexdigest("hemidemisemiquaver")
 
 #comment_form_container.form-area
-  .row
-    %p
-      %label{:for => "comment_author"}= t('author')
-      %br/
+  .set
+    %p.title
+      = f.label :author, t('author')
       = f.text_field :author
     %p
-      %label{:for => "comment_author_url"}= t('url')
-      %br/
+      = f.label :author_url, t('url')
       = f.text_field :author_url
-  %br{:style => "clear: both"}
-  %p
-    %label{:for => "comment_author_email"}= t('email')
-    %br/
-    = f.text_field :author_email
+    %p
+      = f.label :author_email, t('email')
+      = f.text_field :author_email
   %p
     %label{:for => "comment_content"}= t('comment')
     %br/
@@ -25,6 +21,15 @@
   %p
     %label{:for => "comment_filter_id"}= t('filter')
     = f.select :filter_id, [['<none>', '']] + TextFilter.descendants.map { |s| s.filter_name }.sort
+  %p
+    Referred by:
+    = f.object.referrer
+  %p
+    Browser:
+    = f.object.user_agent
+  %p
+    Author's IP Address:
+    = f.object.author_ip
 
 %p.buttons
   = save_model_button(@comment)
