@@ -1,5 +1,6 @@
+require File.expand_path("../lib/radiant-comments-extension/version", __FILE__)
 class CommentsExtension < Radiant::Extension
-  version "#{File.read(File.expand_path(File.dirname(__FILE__)) + '/VERSION')}"
+  version RadiantCommentsExtension::VERSION
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
   
