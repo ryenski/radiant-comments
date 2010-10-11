@@ -1,19 +1,3 @@
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "radiant-comments-extension"
-    gem.summary = %Q{Comments Extension for Radiant CMS}
-    gem.description = %Q{Adds blog-like comment functionality to Radiant.}
-    gem.email = "jim@saturnflyer.com"
-    gem.homepage = "http://github.com/saturnflyer/radiant-comments-extension"
-    gem.authors = ['Jim Gay', 'Ryan Heneise', 'Sean Cribbs','John Muhl', 'Sven Schwyn', 'Gerrit Kaiser', 'Stephen Lombardo', 'Benny Degezelle', 'Frank Louwers', 'Michael Hale', 'Nathaniel Talbott', 'John Croisant', 'Jon Leighton', 'Witter Cheng', 'Keith Bingman']
-    gem.add_development_dependency "radiant"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. This is only required if you plan to package dashboard as a gem."
-end
-
 # Determine where the RSpec plugin is by loading the boot
 unless defined? RADIANT_ROOT
   ENV["RAILS_ENV"] = "test"
