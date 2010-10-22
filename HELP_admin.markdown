@@ -35,7 +35,7 @@ want to use Mollom.
 
 To automatically approve comments set
 
-    Radiant::Config['comments.auto_approve'] == "true"
+    Radiant::Config['comments.auto_approve'] = "true"
 
 Or to review each comment first, set the value to "false"
 
