@@ -33,6 +33,12 @@ set the public and private key pair in the Radiant::Config.
 If both services are configured, this plugin will use the Akismet service. Unset the akismet_key if you
 want to use Mollom.
 
+To automatically approve comments set
+
+    Radiant::Config['comments.auto_approve'] == "true"
+
+Or to review each comment first, set the value to "false"
+
 ## Exporting Data
 
 To customize the CSV fields you can add an initializer like this:
