@@ -1,0 +1,14 @@
+.comment_row {
+  td {
+    height: 31px;
+    &.page, &.date {
+      font-size: 10px;
+    }
+  }
+  .actions .approve {
+    margin-right: 38px;
+    &:hover, &:focus {
+      margin-right: 37px;
+    }
+  }
+}
