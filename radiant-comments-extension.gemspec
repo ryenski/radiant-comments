@@ -20,5 +20,9 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.test_files = `git ls-files spec test`.split("\n")
+
+  s.add_dependency "fastercsv", "~> 1.5.4"
+  s.add_dependency "mollom",    "~> 0.2.3"
+  s.add_dependency "sanitize",  "~> 2.0.3"
 end
 

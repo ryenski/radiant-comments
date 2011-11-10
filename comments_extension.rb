@@ -1,13 +1,10 @@
+require "mollom"
+require "sanitize"
 require File.expand_path("../lib/radiant-comments-extension/version", __FILE__)
 class CommentsExtension < Radiant::Extension
   version RadiantCommentsExtension::VERSION
   description "Adds blog-like comments and comment functionality to pages."
   url "http://github.com/saturnflyer/radiant-comments"
-  
-  extension_config do |config|
-    config.gem 'sanitize'
-    config.gem 'mollom'
-  end
 
   def activate
     Dir["#{File.dirname(__FILE__)}/app/models/*_filter.rb"].each do |file|
