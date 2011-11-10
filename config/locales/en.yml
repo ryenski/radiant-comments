@@ -21,6 +21,8 @@ en:
   edit_comment_on: Edit comment on
   email: E-mail
   message_unsure: Please type the letters that you see to prove that you are not a spambot
+  moderate: Moderate
+  moderate_comments: View comments for this page
   unapprove_comment: Unapprove comment
   url: URL
   your_name: Your Name (as you'd like it to appear on this comment)

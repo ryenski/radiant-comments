@@ -17,7 +17,7 @@ class CommentsExtension < Radiant::Extension
     end
 
     if admin.respond_to? :page
-      admin.page.edit.add :parts_bottom, "edit_comments_enabled", :before => "edit_timestamp"
+      admin.page.edit.add :extended_metadata, "edit_comments_enabled"
       admin.page.index.add :sitemap_head, "index_head_view_comments"
       admin.page.index.add :node, "index_view_comments"
     end

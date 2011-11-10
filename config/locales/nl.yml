@@ -21,6 +21,8 @@ nl:
   edit_comment_on: Wijzig reactie op
   email: E-mail
   message_unsure: Vul onderstaande CAPTCHA in om te bewijzen dat je geen spam-bot bent
+  moderate: Moderate
+  moderate_comments: View comments for this page
   unapprove_comment: Reactie terug naar Te modereren
   url: URL
   your_name: Naam (die je bij deze reactie wilt tonen)
