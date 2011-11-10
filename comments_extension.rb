@@ -18,8 +18,6 @@ class CommentsExtension < Radiant::Extension
 
     if admin.respond_to? :page
       admin.page.edit.add :extended_metadata, "edit_comments_enabled"
-      admin.page.index.add :sitemap_head, "index_head_view_comments"
-      admin.page.index.add :node, "index_view_comments"
     end
 
     tab "Content" do
