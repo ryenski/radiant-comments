@@ -4,6 +4,7 @@ en:
   author: Author
   approve_comment: Approve comment
   are_you_sure_you_want_to_delete_this_comment: Are you sure you want to delete this comment?
+  browser: Browser
   click_to_toggle: Click to toggle complete text
   currently_x_view_comments: Currently {{count}} - show reactions
   comment: Comment
@@ -19,10 +20,12 @@ en:
   download_csv: Download CSV
   edit_comment: Edit comment
   edit_comment_on: Edit comment on
-  email: E-mail
+  email: Email
+  ip: Address
   message_unsure: Please type the letters that you see to prove that you are not a spambot
   moderate: Moderate
   moderate_comments: View comments for this page
+  referrer: Referrer
   unapprove_comment: Unapprove comment
   url: URL
   your_name: Your Name (as you'd like it to appear on this comment)

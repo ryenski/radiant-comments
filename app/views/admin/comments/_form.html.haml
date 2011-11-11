@@ -3,35 +3,56 @@
     = f.hidden_field :spam_answer, :value => "hemidemisemiquaver"
     = f.hidden_field :valid_spam_answer, :value => Digest::MD5.hexdigest("hemidemisemiquaver")
 
-#comment_form_container.form-area
-  .set
-    %p.title
-      = f.label :author, t('author')
-      = f.text_field :author
-    %p
-      = f.label :author_url, t('url')
-      = f.text_field :author_url
-    %p
-      = f.label :author_email, t('email')
-      = f.text_field :author_email
-  %p
-    %label{:for => "comment_content"}= t('comment')
-    %br/
-    = f.text_area :content, :rows => 10, :cols => 72, :class => "textarea"
-  %p
-    %label{:for => "comment_filter_id"}= t('filter')
-    = f.select :filter_id, [['<none>', '']] + TextFilter.descendants.map { |s| s.filter_name }.sort
-  %p
-    Referred by:
-    = f.object.referrer
-  %p
-    Browser:
-    = f.object.user_agent
-  %p
-    Author's IP Address:
-    = f.object.author_ip
+%p.title
+  = f.label :author, t('author')
+  = f.text_field :author, :class => :textbox
 
-%p.buttons
+.drawer
+  #attributes.drawer_contents
+    %table.fieldset
+      %tr
+        %th.label
+          = f.label :author_url, t('url')
+        %td.field
+          = f.text_field :author_url, :class => :textbox
+      %tr
+        %th.label
+          = f.label :author_email, t('email')
+        %td.field
+          = f.text_field :author_email, :class => :textbox
+      %tr
+        %th.label
+          %label{ :for => :referrer }= t('referrer')
+        %td.field
+          %input.textbox{ :value => f.object.referrer }
+      %tr
+        %th.label
+          %label{ :for => :browser }= t('browser')
+        %td.field
+          %input.textbox{ :value => f.object.user_agent }
+      %tr
+        %th.label
+          %label{ :for => :ip }= t('ip')
+        %td.field
+          %input.textbox{ :value => f.object.author_ip }
+
+  .drawer_handle
+    %a.more.toggle{ :href => "#attributes", :rel => "toggle[attributes]" } More
+
+#tab_control
+  .tabs
+    %a.tab.here{ :href => "#" }
+      %span= t("comment")
+  .pages
+    .page
+      .part
+        %p
+          %label{ :for => "comment_filter_id" }= t("filter")
+          = f.select :filter_id, [["<none>", ""]] + TextFilter.descendants.map { |s| s.filter_name }.sort
+        %div
+          = f.text_area :content, :class => "textarea large", :style => "width:100%"
+
+.buttons
   = save_model_button(@comment)
   = t('or')
   = link_to t('cancel'), :back
