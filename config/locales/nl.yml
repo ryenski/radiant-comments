@@ -1,4 +1,4 @@
-nl: 
+nl:
   actions: Acties
   allow_comments_on_page: Reacties toelaten?
   author: Auteur
@@ -21,6 +21,9 @@ nl:
   edit_comment_on: Wijzig reactie op
   email: E-mail
   message_unsure: Vul onderstaande CAPTCHA in om te bewijzen dat je geen spam-bot bent
+  moderate: Moderate
+  moderate_comments: View comments for this page
+  referrer: Referrer
   unapprove_comment: Reactie terug naar Te modereren
   url: URL
   your_name: Naam (die je bij deze reactie wilt tonen)

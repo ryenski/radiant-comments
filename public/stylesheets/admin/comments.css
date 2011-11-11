@@ -1,33 +1,8 @@
-.comment-nav {
-  background: #ccc;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  list-style: none;
-  margin: 0;
-  padding: 10px; }
-  .comment-nav li {
-    display: inline;
-    margin: 0 5px 0 0; }
-  .comment-nav a, .comment-nav span {
-    padding: 5px 5px 5px 25px;
-    background-position: 5px center;
-    background-repeat: no-repeat; }
-  .comment-nav a, .comment-nav a:visited {
-    color: black; }
-  .comment-nav span {
-    border: 1px solid #e8e8e8;
-    background-color: #eee; }
-  .all span, .all a {
-    background-image: url(/images/admin/comments.png); }
-  .approved span, .approved a {
-    background-image: url(/images/admin/accept.png); }
-  .unapproved span, .unapproved a {
-    background-image: url(/images/admin/error.png); }
-
-#content .outset {
-  margin-bottom: 40px;
-}
-
-.controls-column, .date-column, .author-column { white-space: nowrap }
-.comment-unapproved { background-color: #ffe; }
-.comment a, .comment a:visited { color: black; }
+.comment_row td {
+  height: 31px; }
+  .comment_row td.page, .comment_row td.date {
+    font-size: 10px; }
+.comment_row .actions .approve {
+  margin-right: 38px; }
+  .comment_row .actions .approve:hover, .comment_row .actions .approve:focus {
+    margin-right: 37px; }

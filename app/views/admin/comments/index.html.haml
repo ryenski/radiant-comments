@@ -1,57 +1,28 @@
-- content_for :page_scripts do
-  :plain
-    document.observe('dom:loaded', function(){
-      Event.addBehavior({
-        'tr.comment td.content': function(event){
-          $(this).observe('click', function(event){
-            if($(this).down('blockquote.expanded')){
-              $(this).down('blockquote.expanded').toggle();
-              $(this).down('blockquote.short').toggle();
-            }
-            event.stop();
-          });
-        }
-      });
-    });
-  
 - include_stylesheet 'admin/comments'
 
 .outset
-  #filters
-    %ul.comment-nav
-      - if @page
-        %li        
-          = "#{@page.comments.count.to_s} #{t("comment_states.#{params[:status]}")} " if params[:status] 
-          = "#{pluralize(@page.comments.count, 'Comment')} on #{link_to @page.title, edit_admin_page_path(@page)}"
-      %li.all
-        = link_or_span_unless_current(t('comment_states.all'), :status => 'all', :page_id => params[:page_id])
-      %li.approved
-        = link_or_span_unless_current(t('comment_states.approved'), :status => "approved", :page_id => params[:page_id])
-      %li.unapproved
-        = link_or_span_unless_current(t('comment_states.unapproved'), :status => "unapproved", :page_id => params[:page_id])
-
-
-  #comments_table
-    %table#comments.index
-      %thead
-        %tr
-          %th= t('content')
-          %th= t('date_string')
-          %th= t('author')
-          - unless @page
-            %th= t('page')
-          %th= t('actions')
-      %tbody
-        = render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>]
-  %p
-  %small.notice
-    = Comment.spam_filter.message
-
+  %table#comments.index
+    %thead
+      %tr
+        %th= t('comment')
+        - unless @page
+          %th= t('page')
+        %th= t('date_string')
+        %th= t('author')
+        %th.actions= t('actions')
+    %tbody
+      = render(:partial => "comment", :collection => @comments) || %Q[<tr><td class="note" colspan="#{@page ? 4 : 5}">No comments</td></tr>]
 
 #actions
   = will_paginate @comments
   %ul
+    %li.all
+      = link_to "#{image('comments')} #{t('comment_states.all')}", "/admin/comments/all"
+    %li.approved
+      = link_to "#{image('accept')} #{t('comment_states.approved')}", "/admin/comments/approved"
+    %li.unapproved
+      = link_to "#{image('error')} #{t('comment_states.unapproved')}", "/admin/comments/unapproved"
+    %li
+      = link_to "#{image('comments_delete')} #{t('delete_unapproved')}", destroy_unapproved_admin_comments_url, :class => 'delete-unapproved', :method => :delete, :confirm => 'Delete all unapproved comments?'
     %li
       = link_to "#{image('table_save')} #{t('download_csv')}", :format => :csv
-    %li
-      = link_to "#{image('comments_delete')} #{t('delete_unapproved')}", destroy_unapproved_admin_comments_url, :class => 'delete-unapproved', :method => :delete, :confirm => 'Is it OK to delete ALL Unapproved Comments?'

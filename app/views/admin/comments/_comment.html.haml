@@ -1,26 +1,12 @@
-%tr{:id => dom_id(comment), :class => "comment comment-#{comment.ap_status}"}
-  %td.content{:title => comment.content.size >= 70 ? t('click_to_toggle') : "" }
-    %blockquote.short= escape_once(truncate(comment.content, :length => 70))
-    - if comment.content.size >= 70
-      %blockquote.expanded{:style => "display:none"}
-        = escape_once(comment.content)
-  %td.date-column
-    = comment.created_at.strftime("%b %e, %Y at %I:%M%p")
-  %td.author-column
-    = escape_once(comment.author)
-    - unless comment.author_email.blank?
-      = mail_to(comment.author_email, image_tag("admin/email.png"))
-    - unless comment.author_url.blank?
-      = link_to(image_tag("admin/link.png"), comment.author_url)
+%tr.comment_row
+  %td.name= link_to escape_once(truncate(comment.content, :length => 70)), edit_admin_comment_path(comment)
   - unless @page
-    %td.page-column
-      = link_to truncate(comment.page.title, :length => 40), comment.page.url, :class => 'view-page'
-      = link_to image_tag("admin/page_white_edit.png"), edit_admin_page_path(comment.page), :title => t('edit_page')
-  %td.controls-column
+    %td.page= truncate comment.page.title, :length => 40
+  %td.date= comment.created_at.strftime("%D")
+  %td.author= mail_to comment.author_email, escape_once(comment.author)
+  %td.actions
     - if comment.approved?
-      = link_to(image_tag('admin/error.png'), unapprove_admin_comment_path(comment), :method => :put, :title => t('unapprove_comment'))
+      = link_to image("error") + " " + "Unapprove", unapprove_admin_comment_path(comment), :method => :put, :class => :action
     - else
-      = link_to(image_tag('admin/accept.png'), approve_admin_comment_path(comment), :title => t('approve_comment'), :method => :put)
-    
-    = link_to image_tag("admin/delete.png"), admin_comment_path(comment), :method => :delete, :confirm => t('are_you_sure_you_want_to_delete_this_comment'), :title => t('delete_comment')
-    = link_to image_tag("admin/comment_edit.png"), edit_admin_comment_path(comment), :title => t('edit_comment')
+      = link_to image("accept") + " " + "Approve", approve_admin_comment_path(comment), :method => :put, :class => "action approve"
+    = link_to image('minus') + ' ' + t('remove'), admin_comment_path(comment), :method => :delete, :confirm => t('are_you_sure_you_want_to_delete_this_comment'), :class => :action
